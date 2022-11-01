@@ -1,7 +1,9 @@
 from django.urls import path, include
-from .views import helloAPI, randomProblems
+from .views import *
 
 urlpatterns = [
     path("hello/", helloAPI),
-    path("<int:id>/", randomProblems),
+    path("random/<int:id>/", randomProblems),
+    path("<int:id>/", specificProblems),
+    path("student/<int:id>/", specificStudent),
 ]

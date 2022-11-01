@@ -7,3 +7,11 @@ class Problem(models.Model):
     description = models.TextField()
     restriction = models.TextField()
     test_case = models.IntegerField()
+
+class Student(models.Model):
+    student_id = models.IntegerField()
+    student_name = models.TextField()
+
+class ongoing(models.Model):
+    student = models.ForeignKey(Student , on_delete=models.CASCADE)
+    problem = models.ForeignKey(Problem , on_delete=models.CASCADE)
