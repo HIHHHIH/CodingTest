@@ -1,45 +1,79 @@
+# -*- coding: utf-8 -*-
+
 from django.shortcuts import render
-from django.http import JsonResponse 
+from django.http import JsonResponse, HttpResponse
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from ..models import *
-from ..serializers import ProblemSerializer
-import random
 # Create your views here.
 @api_view(['GET'])
 def helloAPI(request):
-    return Response("hello world!")
+    return HttpResponse("hello world!")
 
 @api_view(['GET'])
-def randomProblems(request, id):
-    totalProblems = Problem.objects.all()
-    randomProblems = random.sample(list(totalProblems), id)
-    serializer = ProblemSerializer(randomProblems, many=True) #many 부분을 통해 다량의 데이터도 직렬화 진행
-    return Response(serializer.data)
-
-@api_view(['GET'])
-def specificProblems(request, id):
-    spProblems = Problem.objects.get(problem_id = id)
-    print(spProblems)
-    serializer = ProblemSerializer(spProblems) #many 부분을 통해 다량의 데이터도 직렬화 진행
-    return Response(serializer.data)
-
-@api_view(['GET'])
-def specificStudent(request, id):
-    ongoings = (ongoing.objects
-        .filter(student_id = id)
-        .select_related('student', 'problem')
-        .all())
+def get_lectures(request):
+    lectures = lecture.objects.all()
 
     result = [{
-            "id": ongoing.student.student_id,
-            "name": ongoing.student.student_name,
-            "problem_id": ongoing.problem.problem_id,
-            "problem_name": ongoing.problem.problem_name,
-            "description": ongoing.problem.description,
-            "restriction": ongoing.problem.restriction,
-            "test_case": ongoing.problem.test_case,
-        } for ongoing in ongoings]
-    
-    print(result)
-    return JsonResponse({'result' : result}) 
+            "id": lecture.lecture_id,
+            "title": lecture.title,
+        } for lecture in lectures]
+
+    return JsonResponse({'result' : result})
+
+@api_view(['GET'])
+def get_assignments(request, lecture_id):
+    assignments = (assignment.objects
+                    .select_related('lecture')
+                    .filter( lecture = lecture_id  )
+                    )
+
+    result = [{
+            "id" : assignment.assignment_id,
+            "title": assignment.title,
+            "deadline": assignment.deadline,
+        } for assignment in assignments]
+
+    return JsonResponse({'result' : result})
+
+@api_view(['GET'])
+def get_problem(request, lecture_id, assignment_id ):
+    problems = (problem.objects
+                    .select_related('assignment')
+                    .filter(assignment_id= assignment_id )
+                )
+
+    result = [{
+            "id" : problem.problem_id,
+            "title": problem.title,
+            "assignmentTitle" : problem.assignment.title,
+            "lectureTitle": problem.lecture.title,
+            "description": problem.description,
+            "restriction": problem.restriction,
+            "reference": problem.reference,
+            "timelimit": problem.timelimit,
+            "memorylimit": problem.memorylimit,
+        } for problem in problems]
+
+    return JsonResponse({'result' : result})
+
+@api_view(['GET'])
+def show_problem(request, lecture_id, assignment_id, problem_id ):
+    problems = (problem.objects
+                    .select_related('assignment', 'lecture')
+                    .get( lecture_id= lecture_id, assignment_id= assignment_id, problem_id= problem_id)
+                )
+
+    result = {
+            "id" : problems.problem_id,
+            "title": problems.title,
+            "assignmentTitle" : problems.assignment.title,
+            "lectureTitle": problems.lecture.title,
+            "description": problems.description,
+            "restriction": problems.restriction,
+            "reference": problems.reference,
+            "timelimit": problems.timelimit,
+            "memorylimit": problems.memorylimit,
+        }
+
+    return JsonResponse({'result' : result})
