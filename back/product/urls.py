@@ -1,9 +1,12 @@
 from django.urls import path, include
-from .views import *
+from .views import base_views
 
 urlpatterns = [
-    path("hello/", helloAPI),
-    path("random/<int:id>/", randomProblems),
-    path("<int:id>/", specificProblems),
-    path("student/<int:id>/", specificStudent),
+
+    #base_views.py
+    path("hello/", base_views.helloAPI),
+    path("random/<int:id>/", base_views.randomProblems),
+    path("<int:id>/", base_views.specificProblems),
+    path("student/<int:id>/", base_views.specificStudent),
+    
 ]

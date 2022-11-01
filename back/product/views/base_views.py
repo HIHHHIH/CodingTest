@@ -2,15 +2,10 @@ from django.shortcuts import render
 from django.http import JsonResponse 
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from .models import *
-from .serializers import ProblemSerializer
+from ..models import *
+from ..serializers import ProblemSerializer
 import random
 # Create your views here.
-
-
-
-# Create your views here.
-
 @api_view(['GET'])
 def helloAPI(request):
     return Response("hello world!")
