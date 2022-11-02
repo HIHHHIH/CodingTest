@@ -27,8 +27,8 @@ class problem(models.Model):
     assignment = models.ForeignKey(assignment , on_delete=models.CASCADE)
     title = models.TextField()
     description = models.TextField()
-    restriction = models.TextField()
-    reference = models.TextField()
+    restriction = models.TextField(null = True)
+    reference = models.TextField(null = True)
     timelimit = models.IntegerField()
     memorylimit = models.IntegerField()
 
