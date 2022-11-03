@@ -5,58 +5,38 @@ from django.http import JsonResponse, HttpResponse
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from ..models import *
+from ..serializers import *
 import json
 # Create your views here.
+
+
 @api_view(['GET'])
 def helloAPI(request):
     return HttpResponse("hello world!")
 
+
 @api_view(['GET'])
 def get_lectures(request):
-    lectures = lecture.objects.all()
+    items = lecture.objects.all()
+    serializer = LectureSerializer(items, many=True)
+    return Response(serializer.data)
 
-    result = [{
-            "id": lecture.lecture_id,
-            "title": lecture.title,
-        } for lecture in lectures]
-
-    return JsonResponse({'result' : result})
 
 @api_view(['GET'])
 def get_assignments(request, lecture_id):
-    assignments = (assignment.objects
-                    .select_related('lecture')
-                    .filter( lecture = lecture_id  )
-                    )
+    items = assignment.objects.select_related('lecture').filter(lecture=lecture_id)
+    serializer = AssignmentSerializer(items, many=True)
+    return Response(serializer.data)
 
-    result = [{
-            "id" : assignment.assignment_id,
-            "title": assignment.title,
-            "deadline": assignment.deadline,
-        } for assignment in assignments]
-
-    return JsonResponse({'result' : result})
 
 @api_view(['GET'])
 def get_problem(request, lecture_id, assignment_id ):
-    problems = (problem.objects
+    items = (problem.objects
                     .select_related('assignment')
                     .filter(assignment_id= assignment_id )
                 )
-
-    result = [{
-            "id" : problem.problem_id,
-            "title": problem.title,
-            "assignmentTitle" : problem.assignment.title,
-            "lectureTitle": problem.lecture.title,
-            "description": problem.description,
-            "restriction": problem.restriction,
-            "reference": problem.reference,
-            "timelimit": problem.timelimit,
-            "memorylimit": problem.memorylimit,
-        } for problem in problems]
-
-    return JsonResponse({'result' : result})
+    serializer = LectureSerializer(items, many=True)
+    return Response(serializer.data)
 
 @csrf_exempt
 def info_problem(request):

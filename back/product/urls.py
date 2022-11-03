@@ -1,6 +1,6 @@
 from django.urls import path, include
 from .views import base_views
-
+from .views import editor_view
 urlpatterns = [
 
     #base_views.py
@@ -10,4 +10,6 @@ urlpatterns = [
     path("<int:lecture_id>/assignment/<int:assignment_id>", base_views.get_problem),
     # path("<int:lecture_id>/assignment/<int:assignment_id>/problem/<int:problem_id>", base_views.show_problem),
     path("problem", base_views.info_problem),
+    path('save/', editor_view.save_code),
+    path('download/', editor_view.download_code)
 ]

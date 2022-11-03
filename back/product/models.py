@@ -11,7 +11,7 @@ class user(models.Model):
     email = models.TextField( null = False )
     password = models.TextField( null = False )
     role = models.TextField()
-    created_date = models.DateField()
+    created_date = models.DateField(auto_now_add=True)
 
 
 class assignment(models.Model):
@@ -46,8 +46,8 @@ class testcase(models.Model):
 class solution(models.Model):
     solution_id = models.AutoField(primary_key=True)
     problem = models.ForeignKey(problem , on_delete=models.CASCADE)
-    created_date = models.DateField()
-    modified_date = models.DateField()
+    created_date = models.DateField(auto_now_add=True)
+    modified_date = models.DateField(auto_now=True)
     answer_code = models.TextField()
 
 
@@ -55,8 +55,8 @@ class code(models.Model):
     code_id = models.AutoField(primary_key=True)
     problem = models.ForeignKey(problem , on_delete=models.CASCADE)
     user = models.ForeignKey(user , on_delete=models.CASCADE)
-    created_date = models.DateField()
-    modified_date = models.DateField()
+    created_date = models.DateField(auto_now_add=True)
+    modified_date = models.DateField(auto_now=True)
     user_code = models.TextField()
 
 
