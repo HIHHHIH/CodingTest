@@ -1,7 +1,7 @@
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from ..models import problem
-from ..serializers import *
+from ..serializers.serializers import *
 from django.http import HttpResponse, JsonResponse
 import json
 

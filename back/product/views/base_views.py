@@ -5,7 +5,7 @@ from django.http import JsonResponse, HttpResponse
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from ..models import *
-from ..serializers import *
+from ..serializers.serializers import *
 import json
 # Create your views here.
 
@@ -15,28 +15,38 @@ def helloAPI(request):
     return HttpResponse("hello world!")
 
 
-@api_view(['GET'])
+@api_view(['POST'])
 def get_lectures(request):
     items = lecture.objects.all()
     serializer = LectureSerializer(items, many=True)
     return Response(serializer.data)
 
+@api_view(['POST'])
+def get_assignments(request):
+    try:
+        lecture_id = request.data["lecture_id"]
+        items = assignment.objects.select_related('lecture').filter(lecture_id=lecture_id)
+        serializer = AssignmentSerializer(items, many=True)
+        return Response(serializer.data)
 
-@api_view(['GET'])
-def get_assignments(request, lecture_id):
-    items = assignment.objects.select_related('lecture').filter(lecture=lecture_id)
-    serializer = AssignmentSerializer(items, many=True)
-    return Response(serializer.data)
+    except Exception as e:
+        return JsonResponse({"result":"the json is not correctly serialized"})
 
+@api_view(['POST'])
+def get_problem(request):
+    try:
+        lecture_id = request.data["lecture_id"]
+        assignment_id= request.data["assignment_id"]
+        items = (problem.objects
+                        .select_related('assignment')
+                        .filter(lecture=lecture_id, assignment= assignment_id )
+                    )
 
-@api_view(['GET'])
-def get_problem(request, lecture_id, assignment_id ):
-    items = (problem.objects
-                    .select_related('assignment')
-                    .filter(assignment_id= assignment_id )
-                )
-    serializer = LectureSerializer(items, many=True)
-    return Response(serializer.data)
+        serializer = ProblemSerializer(items, many=True)
+        return Response(serializer.data)
+
+    except Exception as e:
+        return JsonResponse({"result":"the json is not correctly serialized"})
 
 
 @api_view(['GET'])
@@ -54,36 +64,36 @@ def get_main_page(request, problem_id, user_id):
 
 
 @csrf_exempt
+@api_view(['POST'])
 def info_problem(request):
-    if request.method == "POST":
-        try:
-            data = json.loads(request.body.decode())
-            lecture_id = data['lecture_id']
-            assignment_id = data['assignment_id']
-            problem_id = data['problem_id']
+    try:
+        lecture_id = request.data["lecture_id"]
+        assignment_id= request.data["assignment_id"]
+        problem_id = request.data["problem_id"]
 
-            problems = (problem.objects
-                            .select_related('assignment', 'lecture')
-                            .get( lecture_id= lecture_id, assignment_id= assignment_id, problem_id= problem_id)
-                        )
+        item = (problem.objects
+                        .select_related('assignment', 'lecture')
+                        .get( lecture= lecture_id, assignment= assignment_id, problem_id= problem_id)
+                    )
 
+        serializer = ProblemSerializer(item, many=False)
+        return Response(serializer.data)
 
+    except Exception as e:
+        return JsonResponse({"result":"the json is not correctly serialized"})
+        # result = {
+        #         "id" : problems.problem_id,
+        #         "title": problems.title,
+        #         "assignmentTitle" : problems.assignment.title,
+        #         "lectureTitle": problems.lecture.title,
+        #         "description": problems.description,
+        #         "restriction": problems.restriction,
+        #         "reference": problems.reference,
+        #         "timelimit": problems.timelimit,
+        #         "memorylimit": problems.memorylimit,
+        #     }
+        # return JsonResponse({'result' : result})
 
-            result = {
-                    "id" : problems.problem_id,
-                    "title": problems.title,
-                    "assignmentTitle" : problems.assignment.title,
-                    "lectureTitle": problems.lecture.title,
-                    "description": problems.description,
-                    "restriction": problems.restriction,
-                    "reference": problems.reference,
-                    "timelimit": problems.timelimit,
-                    "memorylimit": problems.memorylimit,
-                }
-            return JsonResponse({'result' : result})
-        except Exception as e:
-            print(e)
-            return HttpResponse(404)
 
 
 
