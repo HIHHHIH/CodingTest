@@ -38,6 +38,21 @@ def get_problem(request, lecture_id, assignment_id ):
     serializer = LectureSerializer(items, many=True)
     return Response(serializer.data)
 
+
+@api_view(['GET'])
+def get_main_page(request, problem_id, user_id):
+    current_problem = problem.objects.select_related('assignment').filter(problem_id= problem_id )
+    problem_serializer = ProblemSerializer(current_problem, many=True)
+
+    testcases = testcase.objects.filter(problem_id=problem_id)
+    test_serializer = TestCaseSerializer(testcases, many=True)
+
+    current_code = code.objects.filter(user_id=user_id).filter(problem_id=problem_id)
+    code_serializer = CodeSerializer(current_code, many=True)
+
+    return Response([problem_serializer.data, test_serializer.data, code_serializer.data])
+
+
 @csrf_exempt
 def info_problem(request):
     if request.method == "POST":
@@ -69,6 +84,9 @@ def info_problem(request):
         except Exception as e:
             print(e)
             return HttpResponse(404)
+
+
+
 
 # @api_view(['GET'])
 # def show_problem(request, lecture_id, assignment_id, problem_id ):
