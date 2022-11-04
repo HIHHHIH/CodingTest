@@ -1,6 +1,7 @@
 from django.urls import path, include
-from .views import base_views
-from .views import editor_views
+from .views import base_views, editor_views, console_views
+
+
 urlpatterns = [
 
     #base_views.py
@@ -13,4 +14,6 @@ urlpatterns = [
     path('save/', editor_views.save_code),
     path('download/', editor_views.download_code),
     path('<str:user_id>/<int:problem_id>/', base_views.get_main_page),
+    path('run/', console_views.run_code),
+    path('grade/', console_views.grade_code),
 ]

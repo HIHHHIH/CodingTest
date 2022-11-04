@@ -14,6 +14,12 @@ class CodeSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class CodeRunSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = code
+        fields = '__all__'
+
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = user

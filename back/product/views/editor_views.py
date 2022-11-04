@@ -1,6 +1,5 @@
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from ..models import problem
 from ..serializers.serializers import *
 from django.http import HttpResponse, JsonResponse
 import json
@@ -12,7 +11,8 @@ def save_code(request):
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data)
-    else: return JsonResponse({"result":"the json is not correctly serialized"})
+    else:
+        return Response({"error": "serializer is not valid"})
 
 
 @api_view(['POST'])
@@ -22,4 +22,5 @@ def download_code(request):
         with open("my code.txt", "w") as f:
             f.write(json.dumps(serializer.data))
         return Response(serializer.data)
-    else: return JsonResponse({"result":"the json is not correctly serialized"})
+    else:
+        return Response({"error": "serializer is not valid"})
