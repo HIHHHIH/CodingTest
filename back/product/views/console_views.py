@@ -21,7 +21,6 @@ url: 127.0.0.1:8000/study/grade
 """
 
 
-
 @api_view(['POST'])
 def run_code(request):  #코드 실행
     serializer = CodeSerializer(data=request.data)
