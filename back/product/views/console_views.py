@@ -39,7 +39,7 @@ def run_code(request):  #코드 실행
 
 
 @api_view(['POST'])
-def grade_code(request):  #코드 실행
+def grade_code(request):  #코드 채점
     serializer = CodeSerializer(data=request.data)
     if serializer.is_valid():
         user_code = serializer.data['user_code']  #user가 작성한 코드
