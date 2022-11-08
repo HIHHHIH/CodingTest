@@ -48,6 +48,8 @@ def grade_code(request):  #코드 채점
         """
         user_code를 채점하는 코드 작성
         """
+        # 가독성 검사 : pylama
+        pylama_output = pylama_run(user_code)
 
         output = None  # 코드 채점 결과, dictionary
         return Response(output)  #프론트에 코드 실행 결과 전달
