@@ -1,6 +1,8 @@
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+
 from ..serializers.serializers import *
+from ..module.code_runner import *
 
 """
 1. run_code
@@ -19,22 +21,22 @@ url: 127.0.0.1:8000/study/grade
 확인방법은 run_code와 동일
 
 """
+example = '''
+def solution(n):
+    _curr, _next =0, 1
+    for _ in range(n)
+        _curr, _next = _next, _curr + _next
+        return _curr
+    result = solution(3)
+    print(result)
+'''
 
 
 @api_view(['POST'])
-def run_code(request):  #코드 실행
-    serializer = CodeSerializer(data=request.data)
-    if serializer.is_valid():
-        user_code = serializer.data['user_code']  #user가 작성한 코드
-
-        """
-        user_code를 실행하는 코드 작성
-        """
-
-        output = None  #코드 실행 결과, string
-        return Response({"result": output})  #프론트에 코드 실행 결과 전달
-    else:
-        return Response({"error":"serializer is not valid"})
+def run_code(request):  # 코드 실행
+    user_code = request.data['user_code']  # user가 작성한 코드
+    output = execute(user_code)
+    return Response({"result": output})  # 프론트에 코드 실행 결과 전달
 
 
 @api_view(['POST'])
