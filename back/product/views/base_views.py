@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from ..models import *
 from ..serializers.serializers import *
+from ..serializers.base_serializers import *
 import json
 # Create your views here.
 
@@ -75,7 +76,6 @@ def get_main_page(request, problem_id, user_id):
 
     return Response([problem_serializer.data, test_serializer.data, code_serializer.data, session_serializer.data])
 
-
 @csrf_exempt
 @api_view(['POST'])
 def info_problem(request):
@@ -88,11 +88,31 @@ def info_problem(request):
                         .select_related('assignment', 'lecture')
                         .get( lecture= lecture_id, assignment= assignment_id, problem_id= problem_id)
                     )
-
-        serializer = ProblemSerializer(item, many=False)
+        serializer = PostProblemSerializer(item, many=False)
         return Response(serializer.data)
 
     except Exception as e:
+        print(e)
+        return JsonResponse({"result":"the json is not correctly serialized"})
+
+@api_view(['POST'])
+def load_code(request):
+    try:
+        problem_id = request.data["problem_id"]
+        student_id = request.data["student_id"]
+
+        item = (code.objects
+                    .filter( user= student_id, problem= problem_id).order_by('-modified_date')
+                    )
+        serializer = CodeSerializer(item , many=True)
+
+        if(serializer.data):
+            return Response(serializer.data[0])
+        else:
+            return Response(serializer.data)
+
+    except Exception as e:
+        print(e)
         return JsonResponse({"result":"the json is not correctly serialized"})
         # result = {
         #         "id" : problems.problem_id,

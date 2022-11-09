@@ -11,7 +11,7 @@ class user(models.Model):
     email = models.TextField( null = False )
     password = models.TextField( null = False )
     role = models.TextField()
-    created_date = models.DateField(auto_now_add=True)
+    created_date = models.DateTimeField(auto_now_add=True)
 
 
 class assignment(models.Model):
@@ -24,7 +24,7 @@ class assignment(models.Model):
 class problem(models.Model):
     problem_id = models.IntegerField(primary_key=True)
     lecture = models.ForeignKey(lecture , on_delete=models.CASCADE)
-    assignment = models.ForeignKey(assignment , on_delete=models.CASCADE)
+    assignment = models.ForeignKey(assignment, on_delete=models.CASCADE)
     title = models.TextField()
     description = models.TextField()
     restriction = models.TextField(null = True)
@@ -32,10 +32,15 @@ class problem(models.Model):
     timelimit = models.IntegerField()
     memorylimit = models.IntegerField()
 
+    def opened_testcase(self):
+        return testcase.objects.filter(problem=self, isHidden=False )
+
+    def written_code(self):
+        return code.objects.filter(problem = self)
 
 class testcase(models.Model):
     testcase_id = models.AutoField(primary_key=True)
-    problem = models.ForeignKey(problem , on_delete=models.CASCADE)
+    problem = models.ForeignKey(problem , related_name='testcases', on_delete=models.CASCADE)
     # show number of testcase in that problem
     idx = models.IntegerField()
     isHidden = models.BooleanField()
@@ -46,17 +51,17 @@ class testcase(models.Model):
 class solution(models.Model):
     solution_id = models.AutoField(primary_key=True)
     problem = models.ForeignKey(problem , on_delete=models.CASCADE)
-    created_date = models.DateField(auto_now_add=True)
-    modified_date = models.DateField(auto_now=True)
+    created_date = models.DateTimeField(auto_now_add=True)
+    modified_date = models.DateTimeField(auto_now=True)
     answer_code = models.TextField()
 
 
 class code(models.Model):
     code_id = models.AutoField(primary_key=True)
-    problem = models.ForeignKey(problem , on_delete=models.CASCADE)
+    problem = models.ForeignKey(problem , related_name='codes', on_delete=models.CASCADE)
     user = models.ForeignKey(user , on_delete=models.CASCADE)
-    created_date = models.DateField(auto_now_add=True)
-    modified_date = models.DateField(auto_now=True)
+    created_date = models.DateTimeField(auto_now_add=True)
+    modified_date = models.DateTimeField(auto_now=True)
     user_code = models.TextField()
     code_idx = models.IntegerField()
 

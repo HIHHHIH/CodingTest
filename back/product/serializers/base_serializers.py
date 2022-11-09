@@ -1,18 +1,9 @@
 from rest_framework import serializers
+from .serializers import *
 from ..models import *
 
-
 class PostProblemSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = problem
-        fields = '__all__'
-
-class PostpostLectureSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = lecture
-        fields = '__all__'
-
-class PostAssignmentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = assignment
-        fields = '__all__'
+        testcases = TestCaseSerializer(many=True, read_only = True, source="opened_testcase")
+        class Meta:
+            model = problem
+            fields = ('testcases', 'codes', 'problem_id','lecture' ,'assignment','title','description','restriction','reference','timelimit','memorylimit')
