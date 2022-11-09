@@ -85,10 +85,21 @@ class Migration(migrations.Migration):
                 ('code_id', models.AutoField(primary_key=True, serialize=False)),
                 ('created_date', models.DateField()),
                 ('modified_date', models.DateField()),
+                ('code_idx', models.IntegerField()),
                 ('user_code', models.TextField()),
                 ('problem', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='product.problem')),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='product.user')),
             ],
+        ),
+        migrations.CreateModel(
+            name='session',
+            fields=[
+                ('session_id', models.AutoField(primary_key=True, serialize=False)),
+                ('created_date', models.DateField()),
+                ('submission_count', models.IntegerField()),
+                ('problem', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='product.problem')),
+                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='product.user')),
+            ]
         ),
         migrations.AddField(
             model_name='assingment',

@@ -58,8 +58,16 @@ class code(models.Model):
     created_date = models.DateField(auto_now_add=True)
     modified_date = models.DateField(auto_now=True)
     user_code = models.TextField()
+    code_idx = models.IntegerField()
 
 
 class user_lecture(models.Model):
     user = models.ForeignKey(user , on_delete=models.CASCADE)
     lecture = models.ForeignKey(lecture , on_delete=models.CASCADE)
+
+class session(models.Model):
+    session_id = models.AutoField(primary_key=True)
+    created_date = models.DateField(auto_now_add=True)
+    submission_count = models.IntegerField()
+    problem = models.ForeignKey(problem, on_delete=models.CASCADE)
+    user = models.ForeignKey(user , on_delete=models.CASCADE)

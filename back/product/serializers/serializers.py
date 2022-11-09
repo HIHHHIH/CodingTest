@@ -54,3 +54,8 @@ class AssignmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = assignment
         fields = '__all__'
+
+class SessionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = session
+        fields = '__all__'

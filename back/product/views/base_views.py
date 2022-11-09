@@ -60,7 +60,20 @@ def get_main_page(request, problem_id, user_id):
     current_code = code.objects.filter(user_id=user_id).filter(problem_id=problem_id)
     code_serializer = CodeSerializer(current_code, many=True)
 
-    return Response([problem_serializer.data, test_serializer.data, code_serializer.data])
+    current_session = None
+
+    current_session = session.objects.filter(user_id=user_id, problem_id = problem_id)
+
+    if not current_session.exists(): ## problem을 처음 열람할 시 session 생성
+        current_user = user.objects.get(user_id = user_id) 
+        cp = problem.objects.get(problem_id = problem_id) ## problem
+        session.objects.create(submission_count = 3, problem = cp, user = current_user) ## 문제점: create가 반환하는 type은 serializer에 넣을 수 없다.
+    
+    current_session = session.objects.filter(user_id=user_id, problem_id = problem_id) ## 문제점: 새로 생성하고 다시 select해야한다.
+    session_serializer = SessionSerializer(current_session, many=True)
+        
+
+    return Response([problem_serializer.data, test_serializer.data, code_serializer.data, session_serializer.data])
 
 
 @csrf_exempt
