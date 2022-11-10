@@ -19,4 +19,5 @@ urlpatterns = [
     path('<str:user_id>/<int:problem_id>/', base_views.get_main_page),
     path('run/', console_views.run_code),
     path('grade/', console_views.grade_code),
+    path('recent/', base_views.get_recent)
 ]

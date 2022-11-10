@@ -10,10 +10,31 @@ from ..serializers.base_serializers import *
 import json
 # Create your views here.
 
+SESSION_RECENT_PROBLEM = 'recently accessed problem'
+SESSION_USER_ID = 'user id'
 
 @api_view(['GET'])
 def helloAPI(request):
     return HttpResponse("hello world!")
+
+
+@api_view(['GET'])
+def get_recent(request):
+
+    problem_id = request.session[SESSION_RECENT_PROBLEM]  #세션에서 문제와 유저 ID 가져오기
+    user_id = request.session[SESSION_USER_ID]
+
+    problems = problem.objects.filter(problem_id=problem_id)
+    problem_serializer = ProblemSerializer(problems, many=True)
+
+    testcases = testcase.objects.filter(problem_id=problem_id)
+    test_serializer = TestCaseSerializer(testcases, many=True)
+
+    current_code = code.objects.filter(user_id=user_id).filter(problem_id=problem_id)
+    code_serializer = CodeSerializer(current_code, many=True)
+
+    return Response([problem_serializer.data, test_serializer.data, code_serializer.data])
+
 
 
 @api_view(['POST'])
@@ -21,6 +42,7 @@ def get_lectures(request):
     items = lecture.objects.all()
     serializer = LectureSerializer(items, many=True)
     return Response(serializer.data)
+
 
 @api_view(['POST'])
 def get_assignments(request):
@@ -33,6 +55,7 @@ def get_assignments(request):
     except Exception as e:
         return JsonResponse({"result":"the json is not correctly serialized"})
 
+
 @api_view(['POST'])
 def get_problem(request):
     try:
@@ -42,7 +65,7 @@ def get_problem(request):
                         .select_related('assignment')
                         .filter(lecture=lecture_id, assignment= assignment_id )
                     )
-
+        request.session['latest_problem'] = items
         serializer = ProblemSerializer(items, many=True)
         return Response(serializer.data)
 
@@ -52,8 +75,11 @@ def get_problem(request):
 
 @api_view(['GET'])
 def get_main_page(request, problem_id, user_id):
-    current_problem = problem.objects.select_related('assignment').filter(problem_id= problem_id )
+    current_problem = problem.objects.filter(problem_id= problem_id )
     problem_serializer = ProblemSerializer(current_problem, many=True)
+
+    request.session[SESSION_RECENT_PROBLEM] = problem_id  #세션에 지금 접속한 problem ID 저장
+    request.session[SESSION_USER_ID] = user_id  #세션에 유저ID도 함께 저장
 
     testcases = testcase.objects.filter(problem_id=problem_id)
     test_serializer = TestCaseSerializer(testcases, many=True)
@@ -72,9 +98,9 @@ def get_main_page(request, problem_id, user_id):
     
     current_session = session.objects.filter(user_id=user_id, problem_id = problem_id) ## 문제점: 새로 생성하고 다시 select해야한다.
     session_serializer = SessionSerializer(current_session, many=True)
-        
 
     return Response([problem_serializer.data, test_serializer.data, code_serializer.data, session_serializer.data])
+
 
 @csrf_exempt
 @api_view(['POST'])
