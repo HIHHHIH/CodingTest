@@ -1,18 +1,32 @@
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from ..serializers.serializers import *
-from django.http import HttpResponse, JsonResponse
 import json
 
 
 @api_view(['POST'])
 def save_code(request):
-    serializer = CodeSerializer(data=request.data)
-    if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data)
+    """
+    :param request: [problem_id, user_id, user_code, code_idx]
+    :return:
+    """
+
+    problem_id = request.data['problem']
+    user_id = request.data['user']
+    user_code = request.data['user_code']
+    code_idx = request.data['code_idx']
+
+    saved_code = code.objects.filter(problem=problem_id).filter(user=user_id).filter(code_idx=code_idx)
+    if saved_code.exists():
+        saved_code.update(user_code=user_code)
+        return Response({"result":"your code is successfully edited"})
     else:
-        return Response({"error": "serializer is not valid"})
+        serializer = CodeSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"result": "your code is successfully saved"})
+        else:
+            return Response({"result": "serializer is not valid"})
 
 
 @api_view(['POST'])
