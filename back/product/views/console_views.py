@@ -31,6 +31,34 @@ def solution(n):
     print(result)
 '''
 
+@api_view(['POST'])
+def submit_code(request):  # 코드 제출
+    """
+    :param request: ['user_id', 'problem_id, 'user_code]
+    :return:
+    """
+    user_id = request.data['user_id']
+    problem_id = request.data['problem_id']
+    user_code = request.data['user_code']  # user가 작성한 코드
+
+    sessions = session.objects.filter(user=user_id, problem=problem_id)
+    for item in sessions:
+        pk = item.pk
+    current_session = session.objects.get(pk=pk)
+
+    if current_session.submission_count != 0: #코드 제출 횟수 3번으로 제한. 최초값 3에서 1씩 차감.
+        current_session.submission_count -= 1
+        current_session.save()
+        """
+        코드 제출해서 평가받는 코드 작성
+        """
+    else:
+        Response({"result": "you can't submit more than 3 times."})
+
+    #제출 회수 +1 하는 코드 작성해야함.
+    output = None
+    return Response({"result": current_session.submission_count})  # 프론트에 코드 실행 결과 전달
+
 
 @api_view(['POST'])
 def run_code(request):  # 코드 실행
