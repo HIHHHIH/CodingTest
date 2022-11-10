@@ -87,18 +87,13 @@ def get_main_page(request, problem_id, user_id):
     current_code = code.objects.filter(user_id=user_id).filter(problem_id=problem_id)
     code_serializer = CodeSerializer(current_code, many=True)
 
-    current_session = None
-
     current_session = session.objects.filter(user_id=user_id, problem_id = problem_id)
     if not current_session.exists(): ## problem을 처음 열람할 시 session 생성
         current_user = user.objects.get(user_id = user_id) 
         cp = problem.objects.get(problem_id = problem_id) ## problem
-        current_session = session.objects.create(submission_count = 3, problem = cp, user = current_user)
-        pk = current_session.pk
-        current_session = session.objects.get(pk=pk) # 일단 pk로 filter대신 get쓰도록 했습니다.
-    session_serializer = SessionSerializer(current_session, many=True)
+        session.objects.create(submission_count = 3, problem = cp, user = current_user) #세션은 프론트에 전달하지 않아도 될 것 같습니다.
 
-    return Response([problem_serializer.data, test_serializer.data, code_serializer.data, session_serializer.data])
+    return Response([problem_serializer.data, test_serializer.data, code_serializer.data])
 
 
 @csrf_exempt
