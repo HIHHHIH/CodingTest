@@ -1,6 +1,0 @@
-code =
-{
-"problem":1,
-"user":1,
-"user_code":"this is the written code"
-}
