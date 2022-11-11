@@ -64,8 +64,8 @@ def submit_code(request):  # 코드 제출
 @api_view(['POST'])
 def run_code(request):  # 코드 실행
     user_code = request.data['user_code']  # user가 작성한 코드
-    output = execute(user_code)
-    return Response({"result": output})  # 프론트에 코드 실행 결과 전달
+    line_number, message = execute(user_code)
+    return Response({"line_number": line_number, "message": message})  # 프론트에 코드 실행 결과 전달
 
 
 @api_view(['POST'])
