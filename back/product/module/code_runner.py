@@ -8,7 +8,8 @@ def execute(code):
     try:
         exec(code)
         sys.stdout = old_stdout
-        return redirected_output.getvalue()
+        line_number = None
+        return line_number, redirected_output.getvalue()
     except SyntaxError as err:
         sys.stdout = old_stdout
         message = message = traceback.format_exc(limit=0)
