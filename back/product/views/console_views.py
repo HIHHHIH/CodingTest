@@ -38,6 +38,10 @@ def submit_code(request):  # 코드 제출
     :param request: ['user_id', 'problem_id, 'user_code]
     :return:
     """
+    serializer = CodeSerializer(data=request.data)
+    if not serializer.is_valid():
+        return Response({"result":"serializer is not valid"})
+
     user_id = request.data['user_id']
     problem_id = request.data['problem_id']
     user_code = request.data['user_code']  # user가 작성한 코드
@@ -50,15 +54,22 @@ def submit_code(request):  # 코드 제출
     if current_session.submission_count != 0: #코드 제출 횟수 3번으로 제한. 최초값 3에서 1씩 차감.
         current_session.submission_count -= 1
         current_session.save()
+        # print(current_session.submission_count)
+
+
         """
         코드 제출해서 평가받는 코드 작성
         """
+
+
+        # 가독성 검사 : pylama
+        pylama_output = pylama_run(user_code)
+        # pylama_output = {"mypy": [20, msg1, msg2, ...],"pylint": [20, msg1, msg2, ...],"eradicate": [20, msg1, msg2, ...],"radon": [20, msg1, msg2, ...],"pycodestyle": [20, msg1, msg2, ...]}
+
+        output = None  # 코드 채점 결과, dictionary
+        return Response(output)  # 프론트에 코드 채점 결과 전달
     else:
         Response({"result": "you can't submit more than 3 times."})
-
-    #제출 회수 +1 하는 코드 작성해야함.
-    output = None
-    return Response({"result": current_session.submission_count})  # 프론트에 코드 실행 결과 전달
 
 
 @api_view(['POST'])
@@ -75,14 +86,10 @@ def grade_code(request):  #코드 채점
         user_code = serializer.data['user_code']  #user가 작성한 코드
 
         """
-        user_code를 채점하는 코드 작성
+        모든 테스트 케이스 실행
         """
-        
-        # 가독성 검사 : pylama
-        pylama_output = pylama_run(user_code)
-        # pylama_output = {"mypy": [20, msg1, msg2, ...],"pylint": [20, msg1, msg2, ...],"eradicate": [20, msg1, msg2, ...],"radon": [20, msg1, msg2, ...],"pycodestyle": [20, msg1, msg2, ...]}
 
-        output = None  # 코드 채점 결과, dictionary
-        return Response(output)  #프론트에 코드 실행 결과 전달
+        output = None
+        return Response(output)
     else:
-        return Response({"error":"serializer is not valid"})
+        return Response({"result":"serializer is not valid"})
