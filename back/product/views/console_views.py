@@ -4,7 +4,7 @@ from rest_framework.decorators import api_view
 from ..serializers.serializers import *
 from ..module.code_runner import *
 from ..module.pylama_runner import *
-
+from ..module.case_tester import *
 """
 1. run_code
 url: 127.0.0.1:8000/study/run
@@ -32,42 +32,57 @@ def solution(n):
     print(result)
 '''
 
+
 @api_view(['POST'])
 def submit_code(request):  # 코드 제출
     """
     :param request: ['user_id', 'problem_id, 'user_code]
     :return:
     """
-    serializer = CodeSerializer(data=request.data)
-    if not serializer.is_valid():
-        return Response({"result":"serializer is not valid"})
 
     user_id = request.data['user_id']
     problem_id = request.data['problem_id']
-    user_code = request.data['user_code']  # user가 작성한 코드
+    user_code = request.data['user_code']  # 유저가 작성한 코드
 
     sessions = session.objects.filter(user=user_id, problem=problem_id)
     for item in sessions:
         pk = item.pk
     current_session = session.objects.get(pk=pk)
 
-    if current_session.submission_count != 0: #코드 제출 횟수 3번으로 제한. 최초값 3에서 1씩 차감.
+    if current_session.submission_count != 0:  # 코드 제출 횟수 3번으로 제한. 최초값 3에서 1씩 차감.
         current_session.submission_count -= 1
         current_session.save()
         # print(current_session.submission_count)
 
-
-        """
-        코드 제출해서 평가받는 코드 작성
-        """
-
+        # 테스트 케이스 채점
+        user_code = request.data['user_code']
+        problem_id = request.data['problem']
+        testcases = testcase.objects.filter(problem=problem_id)
+        testcase_result = []  # 테스트 케이스 실행 결과
+        for case in testcases:
+            testcase_result.append(run_testcase(user_code, case.input, case.output))
 
         # 가독성 검사 : pylama
         pylama_output = pylama_run(user_code)
         # pylama_output = {"mypy": [20, msg1, msg2, ...],"pylint": [20, msg1, msg2, ...],"eradicate": [20, msg1, msg2, ...],"radon": [20, msg1, msg2, ...],"pycodestyle": [20, msg1, msg2, ...]}
 
+        pylama_output = {}
+        '''
+        
+        multimetric
+        
+        '''
+        multimetric_output = {}
+
+        '''
+        
+        openAIcodex
+        
+        '''
+        openAIcodex_output = {}
+
         output = None  # 코드 채점 결과, dictionary
-        return Response(output)  # 프론트에 코드 채점 결과 전달
+        return Response([testcase_result, pylama_output, multimetric_output, openAIcodex_output])  # 프론트에 코드 채점 결과 전달
     else:
         Response({"result": "you can't submit more than 3 times."})
 
@@ -80,16 +95,19 @@ def run_code(request):  # 코드 실행
 
 
 @api_view(['POST'])
-def grade_code(request):  #코드 채점
-    serializer = CodeSerializer(data=request.data)
-    if serializer.is_valid():
-        user_code = serializer.data['user_code']  #user가 작성한 코드
+def grade_code(request):  # 코드 채점
 
-        """
-        모든 테스트 케이스 실행
-        """
+    """
 
-        output = None
-        return Response(output)
-    else:
-        return Response({"result":"serializer is not valid"})
+    :param request: [user_code, problem_id]
+    :return:
+    """
+
+    user_code = request.data['user_code']
+    problem_id = request.data['problem']
+    testcases = testcase.objects.filter(problem=problem_id)
+    result = []  # 테스트 케이스 실행 결과
+    for case in testcases:
+        result.append(run_testcase(user_code, case.input, case.output))
+
+    return Response({"result": result})  #임시 아웃풋
