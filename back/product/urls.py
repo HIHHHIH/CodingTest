@@ -16,7 +16,6 @@ urlpatterns = [
 
     path("load/", base_views.load_code),
     path('save/', editor_views.save_code),
-    path('download/', editor_views.download_code),
 
     path('<str:user_id>/<int:problem_id>/', base_views.get_main_page),
     path('run/', console_views.run_code),
