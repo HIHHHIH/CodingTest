@@ -27,14 +27,3 @@ def save_code(request):
             return Response({"result": "your code is successfully saved"})
         else:
             return Response({"result": "serializer is not valid"})
-
-
-@api_view(['POST'])
-def download_code(request):
-    serializer = CodeSerializer(data=request.data)
-    if serializer.is_valid():
-        with open("my code.txt", "w") as f:
-            f.write(json.dumps(serializer.data))
-        return Response(serializer.data)
-    else:
-        return Response({"error": "serializer is not valid"})
