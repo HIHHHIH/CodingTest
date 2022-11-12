@@ -147,27 +147,3 @@ def load_code(request):
         #     }
         # return JsonResponse({'result' : result})
 
-
-
-
-
-# @api_view(['GET'])
-# def show_problem(request, lecture_id, assignment_id, problem_id ):
-#     problems = (problem.objects
-#                     .select_related('assignment', 'lecture')
-#                     .get( lecture_id= lecture_id, assignment_id= assignment_id, problem_id= problem_id)
-#                 )
-#
-#     result = {
-#             "id" : problems.problem_id,
-#             "title": problems.title,
-#             "assignmentTitle" : problems.assignment.title,
-#             "lectureTitle": problems.lecture.title,
-#             "description": problems.description,
-#             "restriction": problems.restriction,
-#             "reference": problems.reference,
-#             "timelimit": problems.timelimit,
-#             "memorylimit": problems.memorylimit,
-#         }
-#
-#     return JsonResponse({'result' : result})
