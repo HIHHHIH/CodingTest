@@ -108,6 +108,6 @@ def grade_code(request):  # 코드 채점
     testcases = testcase.objects.filter(problem=problem_id)
     result = []  # 테스트 케이스 실행 결과
     for case in testcases:
-        result.append(run_testcase(user_code, case.input, case.output))
+        result.append(run_test(user_code, case.input, case.output))
 
     return Response({"result": result})  #임시 아웃풋
