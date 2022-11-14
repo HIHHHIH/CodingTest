@@ -58,9 +58,10 @@ def submit_code(request):  # 코드 제출
         user_code = request.data['user_code']
         problem_id = request.data['problem']
         testcases = testcase.objects.filter(problem=problem_id)
-        testcase_result = []  # 테스트 케이스 실행 결과
-        for case in testcases:
-            testcase_result.append(run_testcase(user_code, case.input, case.output))
+
+        inputs = None  #모든 테스트 케이스 인풋 리스트
+        outputs = None  #모든 테스트 케이스 아웃풋 리스트
+        testcase_result = run_test(user_code, inputs, outputs)  # 테스트 케이스 실행 결과
 
         # 가독성 검사 : pylama
         pylama_output = pylama_run(user_code)
