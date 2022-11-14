@@ -5,6 +5,8 @@ from ..serializers.serializers import *
 from ..module.code_runner import *
 from ..module.pylama_runner import *
 from ..module.case_tester import *
+from ..module.multimetric_runner import *
+
 """
 1. run_code
 url: 127.0.0.1:8000/study/run
@@ -91,8 +93,8 @@ def submit_code(request):  # 코드 제출
 @api_view(['POST'])
 def run_code(request):  # 코드 실행
     user_code = request.data['user_code']  # user가 작성한 코드
-    line_number, message = execute(user_code)
-    return Response({"line_number": line_number, "message": message})  # 프론트에 코드 실행 결과 전달
+    is_success, line_number, message = execute(user_code)
+    return Response({"success": is_success,"line_number": line_number, "message": message})  # 프론트에 코드 실행 결과 전달
 
 
 @api_view(['POST'])
