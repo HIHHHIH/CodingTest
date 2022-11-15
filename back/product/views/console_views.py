@@ -22,18 +22,7 @@ url: 127.0.0.1:8000/study/run
 2. grade_code
 url: 127.0.0.1:8000/study/grade
 확인방법은 run_code와 동일
-
 """
-example = '''
-def solution(n):
-    _curr, _next =0, 1
-    for _ in range(n)
-        _curr, _next = _next, _curr + _next
-        return _curr
-    result = solution(3)
-    print(result)
-'''
-
 
 @api_view(['POST'])
 def submit_code(request):  # 코드 제출
@@ -45,6 +34,7 @@ def submit_code(request):  # 코드 제출
     user_id = request.data['user_id']
     problem_id = request.data['problem_id']
     user_code = request.data['user_code']  # 유저가 작성한 코드
+    solution_code = solution.objects.get(problem_id=problem_id).answer_code  # 정답 코드
 
     sessions = session.objects.filter(user=user_id, problem=problem_id)
     for item in sessions:
@@ -61,8 +51,8 @@ def submit_code(request):  # 코드 제출
         problem_id = request.data['problem']
         testcases = testcase.objects.filter(problem=problem_id)
 
-        inputs = None  #모든 테스트 케이스 인풋 리스트
-        outputs = None  #모든 테스트 케이스 아웃풋 리스트
+        inputs = None  # 모든 테스트 케이스 인풋 리스트
+        outputs = None  # 모든 테스트 케이스 아웃풋 리스트
         testcase_result = run_test(user_code, inputs, outputs)  # 테스트 케이스 실행 결과
 
         '''
@@ -71,13 +61,29 @@ def submit_code(request):  # 코드 제출
         
         '''
         pylama_output = {}
-        
+
         '''
         
         multimetric
         
         '''
-        multimetric_output = {}
+        # 효율성 검사 : multimetric
+        user_halstead, user_loc, user_control_complexity, user_data_complexity = multimetric_run(user_code)
+        sol_halstead, sol_loc, sol_control_complexity, sol_data_complexity = multimetric_run(solution_code)
+
+        halstead_score = 25 if user_halstead < sol_halstead else (sol_halstead / user_halstead) * 25
+        loc_score = 25 if user_loc < sol_loc else (sol_loc / user_loc) * 25
+        control_complexity_score \
+            = 25 if user_control_complexity < sol_control_complexity \
+            else (sol_control_complexity / user_control_complexity) * 25
+        data_complexity_score \
+            = 25 if user_data_complexity < sol_data_complexity \
+            else (sol_data_complexity / user_data_complexity) * 25
+
+        multimetric_output = {"loc_score": loc_score,
+                              "data_complexity_score": data_complexity_score,
+                              "control_complexity_score": control_complexity_score,
+                              "halstead_score": halstead_score}
 
         '''
         
@@ -96,7 +102,7 @@ def submit_code(request):  # 코드 제출
 def run_code(request):  # 코드 실행
     user_code = request.data['user_code']  # user가 작성한 코드
     is_success, line_number, message = execute(user_code)
-    return Response({"success": is_success,"line_number": line_number, "message": message})  # 프론트에 코드 실행 결과 전달
+    return Response({"success": is_success, "line_number": line_number, "message": message})  # 프론트에 코드 실행 결과 전달
 
 
 @api_view(['POST'])
@@ -115,4 +121,4 @@ def grade_code(request):  # 코드 채점
     for case in testcases:
         result.append(run_test(user_code, case.input, case.output))
 
-    return Response({"result": result})  #임시 아웃풋
+    return Response({"result": result})  # 임시 아웃풋
