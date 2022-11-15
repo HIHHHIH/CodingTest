@@ -65,11 +65,13 @@ def submit_code(request):  # 코드 제출
         outputs = None  #모든 테스트 케이스 아웃풋 리스트
         testcase_result = run_test(user_code, inputs, outputs)  # 테스트 케이스 실행 결과
 
-        # 가독성 검사 : pylama
-        pylama_output = pylama_run(user_code)
-        # pylama_output = {"mypy": [20, msg1, msg2, ...],"pylint": [20, msg1, msg2, ...],"eradicate": [20, msg1, msg2, ...],"radon": [20, msg1, msg2, ...],"pycodestyle": [20, msg1, msg2, ...]}
-
+        '''
+        
+        pylama
+        
+        '''
         pylama_output = {}
+        
         '''
         
         multimetric

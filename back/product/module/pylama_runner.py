@@ -37,3 +37,4 @@ def pylama_run(user_code):
         os.remove(my_file)
 
     return pylama_result
+# {"mypy": [20, msg1, msg2, ...],"pylint": [20, msg1, msg2, ...],"eradicate": [20, msg1, msg2, ...],"radon": [20, msg1, msg2, ...],"pycodestyle": [20, msg1, msg2, ...]}
