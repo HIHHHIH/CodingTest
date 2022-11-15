@@ -7,6 +7,7 @@ from rest_framework.decorators import api_view
 from ..models import *
 from ..serializers.serializers import *
 from ..serializers.base_serializers import *
+from ..module.case_tester import *
 import json
 # Create your views here.
 
@@ -34,8 +35,6 @@ def get_recent(request):
     code_serializer = CodeSerializer(current_code, many=True)
 
     return Response([problem_serializer.data, test_serializer.data, code_serializer.data])
-
-
 
 @api_view(['POST'])
 def get_lectures(request):
@@ -89,7 +88,7 @@ def get_main_page(request, problem_id, user_id):
 
     current_session = session.objects.filter(user_id=user_id, problem_id = problem_id)
     if not current_session.exists(): ## problem을 처음 열람할 시 session 생성
-        current_user = user.objects.get(user_id = user_id) 
+        current_user = user.objects.get(user_id = user_id)
         cp = problem.objects.get(problem_id = problem_id) ## problem
         session.objects.create(submission_count = 3, problem = cp, user = current_user) #세션은 프론트에 전달하지 않아도 될 것 같습니다.
 
@@ -115,6 +114,7 @@ def info_problem(request):
         print(e)
         return JsonResponse({"result":"the json is not correctly serialized"})
 
+
 @api_view(['POST'])
 def load_code(request):
     try:
@@ -134,16 +134,25 @@ def load_code(request):
     except Exception as e:
         print(e)
         return JsonResponse({"result":"the json is not correctly serialized"})
-        # result = {
-        #         "id" : problems.problem_id,
-        #         "title": problems.title,
-        #         "assignmentTitle" : problems.assignment.title,
-        #         "lectureTitle": problems.lecture.title,
-        #         "description": problems.description,
-        #         "restriction": problems.restriction,
-        #         "reference": problems.reference,
-        #         "timelimit": problems.timelimit,
-        #         "memorylimit": problems.memorylimit,
-        #     }
-        # return JsonResponse({'result' : result})
 
+
+"""
+1. run_testcase
+url: 127.0.0.1:8000/study/testcase/
+특정 test case 실행
+
+{
+"input" : "1 2"
+"output" : "3"
+"user_code":"this is the written code"
+}
+
+"""
+
+@api_view(['POST'])
+def run_testcase(request):
+    user_code = "def solution(a,b,c):\n\ta+=1\n\treturn a+b+c"  #실행예시
+    inputs = None  # 모든 테스트 케이스 인풋 리스트
+    outputs = None  # 모든 테스트 케이스 아웃풋 리스트
+    testcase_result = run_test(user_code, inputs, outputs)
+    return JsonResponse({'result' : testcase_result})
