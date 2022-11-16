@@ -12,13 +12,6 @@ from ..module.multimetric_runner import *
 url: 127.0.0.1:8000/study/run
 위 url 접속해서 아래 {}내용 복붙해서 POST하면 작성한 코드가 아래 입력에 어떻게 반응하는지 볼 수 있음.
 
-{
-"problem":1,
-"user":1,
-"user_code":"this is the written code"
-}
-
-
 2. grade_code
 url: 127.0.0.1:8000/study/grade
 확인방법은 run_code와 동일
@@ -53,8 +46,8 @@ def submit_code(request):  # 코드 제출
 
         inputs = None  # 모든 테스트 케이스 인풋 리스트
         outputs = None  # 모든 테스트 케이스 아웃풋 리스트
-        testcase_result = run_test(user_code, inputs, outputs)  # 테스트 케이스 실행 결과
-
+        #testcase_result = run_test(user_code, inputs, outputs)  # 테스트 케이스 실행 결과
+        testcase_result = None
         '''
         
         pylama
@@ -62,11 +55,6 @@ def submit_code(request):  # 코드 제출
         '''
         pylama_output = {}
 
-        '''
-        
-        multimetric
-        
-        '''
         # 효율성 검사 : multimetric
         user_halstead, user_loc, user_control_complexity, user_data_complexity = multimetric_run(user_code)
         sol_halstead, sol_loc, sol_control_complexity, sol_data_complexity = multimetric_run(solution_code)
@@ -114,11 +102,30 @@ def grade_code(request):  # 코드 채점
     :return:
     """
 
+    '''
+    {
+            "problem": 1,
+            "user": 1,
+            "user_code": "def solution(a,b, c):\n\td=a*b*c\n\treturn d"
+        }
+    '''
+
     user_code = request.data['user_code']
     problem_id = request.data['problem']
-    testcases = testcase.objects.filter(problem=problem_id)
-    result = []  # 테스트 케이스 실행 결과
-    for case in testcases:
-        result.append(run_test(user_code, case.input, case.output))
+    testcases = testcase.objects.filter(problem=problem_id).order_by('idx')
 
-    return Response({"result": result})  # 임시 아웃풋
+    inputs = testcases.values_list('input', flat=True)  # 모든 테스트 케이스 인풋
+    input_list = []
+    for input in inputs:
+        temp_list = input.split(" ")
+        int_input = list(map(int, temp_list))  #string을 int로 변환
+        input_list.append(int_input)
+
+    outputs = list(testcases.values_list('output', flat=True))
+    output_list = list(map(int, outputs))
+
+    print(input_list)
+    print(output_list)
+
+    testcase_result, user_output = run_test(user_code, input_list, output_list)
+    return Response({"result": "result"})
