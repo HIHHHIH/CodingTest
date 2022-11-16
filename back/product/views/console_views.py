@@ -6,6 +6,7 @@ from ..module.code_runner import *
 from ..module.pylama_runner import *
 from ..module.case_tester import *
 from ..module.multimetric_runner import *
+from ..module.code_explainer import *
 
 """
 1. run_code
@@ -20,7 +21,7 @@ url: 127.0.0.1:8000/study/grade
 @api_view(['POST'])
 def submit_code(request):  # 코드 제출
     """
-    :param request: ['user_id', 'problem_id, 'user_code]
+    :param request: ['user_id', 'problem_id', 'user_code']
     :return:
     """
 
@@ -48,12 +49,6 @@ def submit_code(request):  # 코드 제출
         outputs = None  # 모든 테스트 케이스 아웃풋 리스트
         #testcase_result = run_test(user_code, inputs, outputs)  # 테스트 케이스 실행 결과
         testcase_result = None
-        '''
-        
-        pylama
-        
-        '''
-        pylama_output = {}
 
         # 효율성 검사 : multimetric
         user_halstead, user_loc, user_control_complexity, user_data_complexity = multimetric_run(user_code)
@@ -73,12 +68,12 @@ def submit_code(request):  # 코드 제출
                               "control_complexity_score": control_complexity_score,
                               "halstead_score": halstead_score}
 
-        '''
+        # 가독성 검사 : pylama
+        pylama_output = pylama_run(user_code)
+        # {"mypy": [20, msg1, msg2, ...],"pylint": [20, msg1, msg2, ...],"eradicate": [20, msg1, msg2, ...],"radon": [20, msg1, msg2, ...],"pycodestyle": [20, msg1, msg2, ...]}
         
-        openAIcodex
-        
-        '''
-        openAIcodex_output = {}
+        # 코드 설명 : openai 
+        openAIcodex_output = {"openai": explain_code(user_code)}
 
         output = None  # 코드 채점 결과, dictionary
         return Response([testcase_result, pylama_output, multimetric_output, openAIcodex_output])  # 프론트에 코드 채점 결과 전달
