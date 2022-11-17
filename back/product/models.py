@@ -23,6 +23,7 @@ class assignment(models.Model):
 
 class problem(models.Model):
     problem_id = models.IntegerField(primary_key=True)
+    idx = models.IntegerField()
     lecture = models.ForeignKey(lecture , on_delete=models.CASCADE)
     assignment = models.ForeignKey(assignment, on_delete=models.CASCADE)
     title = models.TextField()
