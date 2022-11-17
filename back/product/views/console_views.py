@@ -47,17 +47,17 @@ def grade(user_code, testcases):
 @api_view(['POST'])
 def submit_code(request):  # 코드 제출
     """
-    :param request: ['user_id', 'problem_id', 'user_code']
-    :return:
+    :param request: ['problem_id', 'user_id', 'user_code', 'code_idx]
     """
 
     '''
            {
                "problem_id": 1,
                "user_id": 1,
-               "user_code": "def solution(a,b, c):\n\td=a*b*c\n\treturn d"
+               "user_code": "def solution(a,b, c):\n\td=a*b*c\n\treturn d",
+               "code_idx": "2"
            }
-       '''
+   '''
 
     user_id = request.data['user_id']
     problem_id = request.data['problem_id']
@@ -72,7 +72,12 @@ def submit_code(request):  # 코드 제출
     if current_session.submission_count != 0:  # 코드 제출 횟수 3번으로 제한. 최초값 3에서 1씩 차감.
         current_session.submission_count -= 1
         current_session.save()
-        # print(current_session.submission_count)
+        code_slot = 6 - current_session.submission_count
+        # 제출한 코드 DB에 저장
+        request.data["code_idx"] = code_slot
+        serializer = CodeSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
 
         # 테스트 케이스 채점
         testcases = testcase.objects.filter(problem=problem_id)
@@ -108,7 +113,6 @@ def submit_code(request):  # 코드 제출
         # 코드 설명 : openai 
         openAIcodex_output = {"openai": explain_code(user_code)}
 
-        output = None  # 코드 채점 결과, dictionary
         return Response([testcase_result, pylama_output, multimetric_output, openAIcodex_output, solution_code])  # 프론트에 코드 채점 결과 전달
     else:
         return Response({"result": "you can't submit more than 3 times."})
