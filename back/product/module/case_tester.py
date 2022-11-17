@@ -6,8 +6,11 @@ import sys
 run_test(user_code, input, output) 으로 테스트실행. 파라미터는 run_test 주석 참고.
 '''
 
-test_results = {}  #모든 테스트 결과 저장
-temp_output = {}  #모든 유저 아웃풋 저장
+result_list = {}  #모든 테스트 결과 저장
+output_list = {}  #모든 유저 아웃풋 저장
+'''
+둘 다 1,2,3,4,5를 키로 하는 딕셔너리
+'''
 
 class CaseTester(unittest.TestCase):
     user_class = None
@@ -18,7 +21,7 @@ class CaseTester(unittest.TestCase):
         pass
 
     def tearDown(self):  #각 테스트 후마다 자동 실행
-        global test_results
+        global result_list
 
         if hasattr(self._outcome, 'errors'):  #파이선 버전에 따라 결과 호출 방식이 다름.
             # Python 3.4 - 3.10  (These two methods have no side effects)
@@ -33,43 +36,43 @@ class CaseTester(unittest.TestCase):
         ok = all(test != self for test, text in result.errors + result.failures)
 
         if ok:  #테스트 통과하면 'P'로 저장
-            test_results[test_num] = 'P'
+            result_list[test_num] = 'P'
         else:  #테스트 실패하면 'F'로 저장
-            test_results[test_num] = 'F'
+            result_list[test_num] = 'F'
 
     def test_case1(self):  #test_로 시작하는 method는 unittest.main()실행하면 알아서 테스트함.
 
         user_output = self.user_class.solution(*self.params[0])
-        global temp_output
-        temp_output[1] = user_output
+        global output_list
+        output_list[1] = user_output
         self.assertEqual(user_output, self.outputs[0])
 
     def test_case2(self):
 
         user_output = self.user_class.solution(*self.params[1])
-        global temp_output
-        temp_output[2] = user_output
+        global output_list
+        output_list[2] = user_output
         self.assertEqual(user_output, self.outputs[1])
 
     def test_case3(self):
 
         user_output = self.user_class.solution(*self.params[2])
-        global temp_output
-        temp_output[3] = user_output
+        global output_list
+        output_list[3] = user_output
         self.assertEqual(user_output, self.outputs[2])
 
     def test_case4(self):
 
         user_output = self.user_class.solution(*self.params[3])
-        global temp_output
-        temp_output[4] = user_output
+        global output_list
+        output_list[4] = user_output
         self.assertEqual(user_output, self.outputs[3])
 
     def test_case5(self):
 
         user_output = self.user_class.solution(*self.params[4])
-        global temp_output
-        temp_output[5] = user_output
+        global output_list
+        output_list[5] = user_output
         self.assertEqual(user_output, self.outputs[4])
 
 def run_test(user_code, input, output):
@@ -113,7 +116,7 @@ def run_test(user_code, input, output):
 
     os.remove("temp_code.py")  # 임시 저장한 유저코드 파일 삭제
 
-    return [test_results, temp_output]
+    return [result_list, output_list]
 
 
 if __name__ == '__main__':
