@@ -76,7 +76,10 @@ def submit_code(request):  # 코드 제출
         openAIcodex_output = {"openai": explain_code(user_code)}
 
         output = None  # 코드 채점 결과, dictionary
-        return Response([testcase_result, pylama_output, multimetric_output, openAIcodex_output])  # 프론트에 코드 채점 결과 전달
+
+        #솔루션 코드
+        solution_code = None
+        return Response([testcase_result, pylama_output, multimetric_output, openAIcodex_output, solution_code])  # 프론트에 코드 채점 결과 전달
     else:
         Response({"result": "you can't submit more than 3 times."})
 
@@ -98,12 +101,12 @@ def grade_code(request):  # 코드 채점
     """
 
     '''
-    {
-            "problem": 1,
-            "user": 1,
-            "user_code": "def solution(a,b, c):\n\td=a*b*c\n\treturn d"
-        }
-    '''
+       {
+               "problem": 1,
+               "user": 1,
+               "user_code": "def solution(a,b, c):\n\td=a*b*c\n\treturn d"
+       }
+   '''
 
     user_code = request.data['user_code']
     problem_id = request.data['problem']
@@ -119,8 +122,29 @@ def grade_code(request):  # 코드 채점
     outputs = list(testcases.values_list('output', flat=True))
     output_list = list(map(int, outputs))
 
-    print(input_list)
-    print(output_list)
-
     testcase_result, user_output = run_test(user_code, input_list, output_list)
-    return Response({"result": "result"})
+
+    #채점 점수
+    score = sum(20 for value in testcase_result.values() if value == 'P')
+
+    #오픈 테스트 케이스
+    open_case_sum = []
+    for i in range(1,3):
+        case_result = {'result': '통과' if testcase_result[i] == 'P' else '실패',
+                       'input': f'solution({",".join(str(num) for num in input_list[i-1])})',
+                       'correct output': str(output_list[i - 1]),
+                       'your output': str(user_output[i])}
+        open_case_sum.append(case_result)
+
+    #히든 테스트 케이스
+    hidden_case_sum = []
+    for i in range(3,6):
+        case_result = {'result': '통과' if testcase_result[i] == 'P' else '실패'}
+        hidden_case_sum.append(case_result)
+
+    result = {"score":score,
+              "open results":open_case_sum,
+              "hidden results":hidden_case_sum
+              }
+
+    return Response(result)
