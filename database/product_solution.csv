@@ -1,0 +1,25 @@
+solution_id,created_date,answer_code,problem_id,modified_date
+1,2022-11-05 15:00:00,"def soluton(num1, num2) :
+    answer = num1 * num2
+    return answer
+",0,2022-11-05 15:00:00
+2,2022-11-05 15:00:00,"def soluton(num1, num2) :
+    answer = num1 % num2
+    return answer
+",1,2022-11-05 15:00:00
+3,2022-11-05 15:00:00,"def soluton(num1, num2) :
+    answer = num1 - num2
+    return answer
+",2,2022-11-05 15:00:00
+4,2022-11-05 15:00:00,"def soluton(num1, num2) :
+    if num1 == num2 :
+        answer = 1
+    else :
+        answer = -1
+    return answer
+",3,2022-11-05 15:00:00
+5,2022-11-05 15:00:00,"def soluton(num1, num2) :
+    answer = num1 / num2
+    answer = int(answer)
+    return answer
+",4,2022-11-05 15:00:00

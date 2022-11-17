@@ -5,44 +5,30 @@ from ..serializers.serializers import *
 from ..module.code_runner import *
 from ..module.pylama_runner import *
 from ..module.case_tester import *
+from ..module.multimetric_runner import *
+from ..module.code_explainer import *
+
 """
 1. run_code
 url: 127.0.0.1:8000/study/run
 위 url 접속해서 아래 {}내용 복붙해서 POST하면 작성한 코드가 아래 입력에 어떻게 반응하는지 볼 수 있음.
 
-{
-"problem":1,
-"user":1,
-"user_code":"this is the written code"
-}
-
-
 2. grade_code
 url: 127.0.0.1:8000/study/grade
 확인방법은 run_code와 동일
-
 """
-example = '''
-def solution(n):
-    _curr, _next =0, 1
-    for _ in range(n)
-        _curr, _next = _next, _curr + _next
-        return _curr
-    result = solution(3)
-    print(result)
-'''
-
 
 @api_view(['POST'])
 def submit_code(request):  # 코드 제출
     """
-    :param request: ['user_id', 'problem_id, 'user_code]
+    :param request: ['user_id', 'problem_id', 'user_code']
     :return:
     """
 
     user_id = request.data['user_id']
     problem_id = request.data['problem_id']
     user_code = request.data['user_code']  # 유저가 작성한 코드
+    solution_code = solution.objects.get(problem_id=problem_id).answer_code  # 정답 코드
 
     sessions = session.objects.filter(user=user_id, problem=problem_id)
     for item in sessions:
@@ -58,28 +44,36 @@ def submit_code(request):  # 코드 제출
         user_code = request.data['user_code']
         problem_id = request.data['problem']
         testcases = testcase.objects.filter(problem=problem_id)
-        testcase_result = []  # 테스트 케이스 실행 결과
-        for case in testcases:
-            testcase_result.append(run_testcase(user_code, case.input, case.output))
+
+        inputs = None  # 모든 테스트 케이스 인풋 리스트
+        outputs = None  # 모든 테스트 케이스 아웃풋 리스트
+        #testcase_result = run_test(user_code, inputs, outputs)  # 테스트 케이스 실행 결과
+        testcase_result = None
+
+        # 효율성 검사 : multimetric
+        user_halstead, user_loc, user_control_complexity, user_data_complexity = multimetric_run(user_code)
+        sol_halstead, sol_loc, sol_control_complexity, sol_data_complexity = multimetric_run(solution_code)
+
+        halstead_score = 25 if user_halstead < sol_halstead else (sol_halstead / user_halstead) * 25
+        loc_score = 25 if user_loc < sol_loc else (sol_loc / user_loc) * 25
+        control_complexity_score \
+            = 25 if user_control_complexity < sol_control_complexity \
+            else (sol_control_complexity / user_control_complexity) * 25
+        data_complexity_score \
+            = 25 if user_data_complexity < sol_data_complexity \
+            else (sol_data_complexity / user_data_complexity) * 25
+
+        multimetric_output = {"loc_score": loc_score,
+                              "data_complexity_score": data_complexity_score,
+                              "control_complexity_score": control_complexity_score,
+                              "halstead_score": halstead_score}
 
         # 가독성 검사 : pylama
         pylama_output = pylama_run(user_code)
-        # pylama_output = {"mypy": [20, msg1, msg2, ...],"pylint": [20, msg1, msg2, ...],"eradicate": [20, msg1, msg2, ...],"radon": [20, msg1, msg2, ...],"pycodestyle": [20, msg1, msg2, ...]}
-
-        pylama_output = {}
-        '''
+        # {"mypy": [20, msg1, msg2, ...],"pylint": [20, msg1, msg2, ...],"eradicate": [20, msg1, msg2, ...],"radon": [20, msg1, msg2, ...],"pycodestyle": [20, msg1, msg2, ...]}
         
-        multimetric
-        
-        '''
-        multimetric_output = {}
-
-        '''
-        
-        openAIcodex
-        
-        '''
-        openAIcodex_output = {}
+        # 코드 설명 : openai 
+        openAIcodex_output = {"openai": explain_code(user_code)}
 
         output = None  # 코드 채점 결과, dictionary
         return Response([testcase_result, pylama_output, multimetric_output, openAIcodex_output])  # 프론트에 코드 채점 결과 전달
@@ -90,8 +84,8 @@ def submit_code(request):  # 코드 제출
 @api_view(['POST'])
 def run_code(request):  # 코드 실행
     user_code = request.data['user_code']  # user가 작성한 코드
-    line_number, message = execute(user_code)
-    return Response({"line_number": line_number, "message": message})  # 프론트에 코드 실행 결과 전달
+    is_success, line_number, message = execute(user_code)
+    return Response({"success": is_success, "line_number": line_number, "message": message})  # 프론트에 코드 실행 결과 전달
 
 
 @api_view(['POST'])
@@ -103,11 +97,30 @@ def grade_code(request):  # 코드 채점
     :return:
     """
 
+    '''
+    {
+            "problem": 1,
+            "user": 1,
+            "user_code": "def solution(a,b, c):\n\td=a*b*c\n\treturn d"
+        }
+    '''
+
     user_code = request.data['user_code']
     problem_id = request.data['problem']
-    testcases = testcase.objects.filter(problem=problem_id)
-    result = []  # 테스트 케이스 실행 결과
-    for case in testcases:
-        result.append(run_test(user_code, case.input, case.output))
+    testcases = testcase.objects.filter(problem=problem_id).order_by('idx')
 
-    return Response({"result": result})  #임시 아웃풋
+    inputs = testcases.values_list('input', flat=True)  # 모든 테스트 케이스 인풋
+    input_list = []
+    for input in inputs:
+        temp_list = input.split(" ")
+        int_input = list(map(int, temp_list))  #string을 int로 변환
+        input_list.append(int_input)
+
+    outputs = list(testcases.values_list('output', flat=True))
+    output_list = list(map(int, outputs))
+
+    print(input_list)
+    print(output_list)
+
+    testcase_result, user_output = run_test(user_code, input_list, output_list)
+    return Response({"result": "result"})
