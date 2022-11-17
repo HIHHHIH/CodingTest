@@ -53,10 +53,9 @@ def submit_code(request):  # 코드 제출
 
     '''
            {
-                   
-                   "problem_id": 1,
-                   "user_id": 1,
-                   "user_code": "def solution(a,b, c):\n\td=a*b*c\n\treturn d"
+               "problem_id": 1,
+               "user_id": 1,
+               "user_code": "def solution(a,b, c):\n\td=a*b*c\n\treturn d"
            }
        '''
 
@@ -110,10 +109,9 @@ def submit_code(request):  # 코드 제출
         openAIcodex_output = {"openai": explain_code(user_code)}
 
         output = None  # 코드 채점 결과, dictionary
-
         return Response([testcase_result, pylama_output, multimetric_output, openAIcodex_output, solution_code])  # 프론트에 코드 채점 결과 전달
     else:
-        Response({"result": "you can't submit more than 3 times."})
+        return Response({"result": "you can't submit more than 3 times."})
 
 
 @api_view(['POST'])
@@ -127,21 +125,14 @@ def run_code(request):  # 코드 실행
 def grade_code(request):  # 코드 채점
 
     """
-
-    :param request: [user_code, problem_id]
-    :return:
-    """
-
-    '''
        {
-               "problem": 1,
-               "user": 1,
+               "problem_id": 1,
                "user_code": "def solution(a,b, c):\n\td=a*b*c\n\treturn d"
        }
-   '''
+    """
 
     user_code = request.data['user_code']
-    problem_id = request.data['problem']
+    problem_id = request.data['problem_id']
     testcases = testcase.objects.filter(problem=problem_id).order_by('idx')
 
     score, open_case_sum, hidden_case_sum = grade(user_code, testcases)
