@@ -118,13 +118,38 @@ def run_test(user_code, input, output):
 
     return [result_list, output_list]
 
+def run_specific_test(user_code, input, output):
+    """run_test의 수정버전
+        test case 1개만 선택해서 할 때 사용
+    """
+    with open("temp_code.py", 'w') as f:
+        f.write("class UserCode:\n\t")
+        for line in user_code.splitlines():
+            idx = line.find("solution(")
+            if idx != -1:
+                line = line[:idx+9] + "self, " + line[idx+9:]
+            f.write("\n\t" + line)
+        f.close()
+
+    import temp_code
+    CaseTester.params = input
+    CaseTester.user_class = temp_code.UserCode()
+    CaseTester.outputs = output
+
+
+    # 다른 실행방법
+    suite = unittest.TestSuite()
+    suite.addTest(CaseTester("test_case1"))  # 테스트 케이스 하나씩 추가
+    runner = unittest.TextTestRunner()
+    runner.run(suite)
+
+    os.remove("temp_code.py")  # 임시 저장한 유저코드 파일 삭제
+
+    return [result_list, output_list]
+
 
 if __name__ == '__main__':
     user_code = "def solution(a,b,c):\n\ta+=1\n\treturn a+b+c"  #실행예시
     # 두번째, 다섯번째에서 오류발생하게 해놓음
 
     print(run_test(user_code,[[1,2,3],[2,3,4],[3,4,5],[4,5,6],[7,8,9]], [7,15,13,16,21])) # [user_code, input(list or tuple), output)
-
-
-
-
