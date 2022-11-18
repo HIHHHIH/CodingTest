@@ -11,7 +11,7 @@ urlpatterns = [
     path("assignment/", base_views.get_problem),
     # path("<int:lecture_id>/assignment/<int:assignment_id>/problem/<int:problem_id>", base_views.show_problem),
     path("problem/", base_views.info_problem),
-    path("testcase/", base_views.run_testcase),
+    path("testcase/", base_views.run_specific_testcase),
 
     path('recent/', base_views.get_recent),
 

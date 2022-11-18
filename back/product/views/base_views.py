@@ -7,7 +7,7 @@ from rest_framework.decorators import api_view
 from ..models import *
 from ..serializers.serializers import *
 from ..serializers.base_serializers import *
-from ..module.case_tester import *
+from ..module.case_tester import run_specific_test
 import json
 # Create your views here.
 
@@ -137,7 +137,7 @@ def load_code(request):
 
 
 """
-1. run_testcase
+1. run_specific_testcase
 url: 127.0.0.1:8000/study/testcase/
 특정 test case 실행
 
@@ -150,9 +150,32 @@ url: 127.0.0.1:8000/study/testcase/
 """
 
 @api_view(['POST'])
-def run_testcase(request):
-    user_code = "def solution(a,b,c):\n\ta+=1\n\treturn a+b+c"  #실행예시
-    inputs = None  # 모든 테스트 케이스 인풋 리스트
-    outputs = None  # 모든 테스트 케이스 아웃풋 리스트
-    testcase_result = run_test(user_code, inputs, outputs)
-    return JsonResponse({'result' : testcase_result})
+def run_specific_testcase(request):
+
+    input = request.data["input"]
+    output = request.data["output"]
+    user_code = request.data["user_code"]
+
+    input_list = []
+    output_list = []
+    if(len(input.split(" ")) != 1) :
+        input_list.append(list(map(int, input.split(" "))))  # string을 int로 변환
+    else :
+        input_list.append(int(input))
+
+    if(len(output.split(" ")) != 1) :
+        output_list.append(list(map(int, output.split(" "))))
+    else :
+        output_list.append(int(output))
+
+
+    # user_code = "def solution(a,b,c):\n\treturn a+b+c"  #실행예시
+    # input = [[1,2,3]]  # 모든 테스트 케이스 인풋 리스트
+    # output = [6]  # 모든 테스트 케이스 아웃풋 리스트
+    testcase_result, user_output = run_specific_test(user_code, input_list, output_list)
+
+
+    try:
+        return Response({'result' : testcase_result[1], 'output' : user_output[1]})
+    except Exception as e:
+        return Response({'result' : "F", 'output' : "Unkwon Error"})
