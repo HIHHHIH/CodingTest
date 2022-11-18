@@ -12,6 +12,7 @@ db.sqlite3-journal
 media
 secrets.json
 openAIsecret.txt
+openaisecrets.txt
 
 # If your build process includes running collectstatic, then you probably don't need or want to include staticfiles/
 # in your Git repository. Update and uncomment the following line accordingly.
@@ -134,6 +135,7 @@ celerybeat.pid
 *.sage.py
 
 # Environments
+venv2/
 .env
 .venv
 env/
