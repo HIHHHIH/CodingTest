@@ -52,6 +52,7 @@ def get_assignments(request):
         return Response(serializer.data)
 
     except Exception as e:
+        print(e)
         return JsonResponse({"result":"the json is not correctly serialized"})
 
 
@@ -64,11 +65,12 @@ def get_problem(request):
                         .select_related('assignment')
                         .filter(lecture=lecture_id, assignment= assignment_id )
                     )
-        request.session['latest_problem'] = items
+        # request.session['latest_problem'] = items
         serializer = ProblemSerializer(items, many=True)
         return Response(serializer.data)
 
     except Exception as e:
+        print(e)
         return JsonResponse({"result":"the json is not correctly serialized"})
 
 
