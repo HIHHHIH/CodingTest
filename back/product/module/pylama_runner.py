@@ -1,9 +1,20 @@
+#-*- coding:utf-8 -*-
+
 from pylama.main import parse_options, check_paths
 import os
 
-def pylama_run(user_code):
-    file_list = os.listdir('.') # 현재 폴더의 모든 파일 목록
-    skip_list = ','.join(file_list) 
+def pylama_run(file_name):
+    # set pylama options
+    my_path = '.\\..\\views'
+    linters = ['mypy', 'pylint', 'eradicate', 'radon', 'pycodestyle']
+    file_list = os.listdir(my_path) # 현재 폴더의 모든 파일 목록
+    file_list.remove(file_name) # 테스트 대상 파일만 제외 
+    skip_list = ','.join(file_list)
+    my_redefined_options = {
+        'linters': linters,
+        'skip': skip_list
+    }
+
     pylama_result = {
         "mypy": [20, ],
         "pylint": [20, ],
@@ -11,30 +22,15 @@ def pylama_run(user_code):
         "radon": [20, ],
         "pycodestyle": [20, ]
     }
-    linters = ['mypy', 'pylint', 'eradicate', 'radon', 'pycodestyle']
-    my_redefined_options = {
-        'linters': linters,
-        'skip': skip_list
-    }
-    my_path = '.' 
-
-    # save .py file into this directory
-    my_file = my_path + "\\user_code.py"
-    f = open(my_file, "w")
-    f.write(user_code)
 
     # run pylama
     options = parse_options([my_path], **my_redefined_options)
-    errors = check_paths(my_path, options, rootdir='.')
+    errors = check_paths('.', options, rootdir=my_path)
     for e in errors:
-        if pylama_result[e.source][0] > 0: # 감점
-            pylama_result[e.source][0] -= 1
-        pylama_result[e.source].append(e.message) # add message to list
-    
-    # delete .py file
-    f.close()
-    if os.path.isfile(my_file):
-        os.remove(my_file)
-
+        if (e.etype != 'N'):
+            if pylama_result[e.source][0] > 0: # 감점
+                pylama_result[e.source][0] -= 1
+                pylama_result[e.source].append(e.message) # add message to list
     return pylama_result
 # {"mypy": [20, msg1, msg2, ...],"pylint": [20, msg1, msg2, ...],"eradicate": [20, msg1, msg2, ...],"radon": [20, msg1, msg2, ...],"pycodestyle": [20, msg1, msg2, ...]}
+# 5개 평가 항목, 각 20점 만점, 감점제, 메시지 최대 20개

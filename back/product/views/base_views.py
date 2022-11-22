@@ -7,12 +7,11 @@ from rest_framework.decorators import api_view
 from ..models import *
 from ..serializers.serializers import *
 from ..serializers.base_serializers import *
-from ..module.case_tester import run_specific_test
+from ..module.case_tester import run_specific_test, rand_name
 import json
 # Create your views here.
 
-SESSION_RECENT_PROBLEM = 'recently accessed problem'
-SESSION_USER_ID = 'user id'
+RECENT = 'recently accessed user to a problem'
 
 @api_view(['GET'])
 def helloAPI(request):
@@ -22,9 +21,9 @@ def helloAPI(request):
 @api_view(['GET'])
 def get_recent(request):
 
-    problem_id = request.session[SESSION_RECENT_PROBLEM]  #세션에서 문제와 유저 ID 가져오기
-    user_id = request.session[SESSION_USER_ID]
-
+    user_id, problem_id = request.session[RECENT]  #세션에서 문제와 유저 ID 가져오기
+    if problem_id is None:
+        return Response({'result':'no recent access'})
     problems = problem.objects.filter(problem_id=problem_id)
     problem_serializer = ProblemSerializer(problems, many=True)
 
@@ -65,7 +64,6 @@ def get_problem(request):
                         .select_related('assignment')
                         .filter(lecture=lecture_id, assignment= assignment_id )
                     )
-        # request.session['latest_problem'] = items
         serializer = ProblemSerializer(items, many=True)
         return Response(serializer.data)
 
@@ -79,8 +77,7 @@ def get_main_page(request, problem_id, user_id):
     current_problem = problem.objects.filter(problem_id= problem_id )
     problem_serializer = ProblemSerializer(current_problem, many=True)
 
-    request.session[SESSION_RECENT_PROBLEM] = problem_id  #세션에 지금 접속한 problem ID 저장
-    request.session[SESSION_USER_ID] = user_id  #세션에 유저ID도 함께 저장
+    request.session[RECENT] = user_id, problem_id  #세션에 지금 접속한 user_id와 problem_id 저장
 
     testcases = testcase.objects.filter(problem_id=problem_id)
     test_serializer = TestCaseSerializer(testcases, many=True)
@@ -89,10 +86,10 @@ def get_main_page(request, problem_id, user_id):
     code_serializer = CodeSerializer(current_code, many=True)
 
     current_session = session.objects.filter(user_id=user_id, problem_id = problem_id)
-    if not current_session.exists(): ## problem을 처음 열람할 시 session 생성
+    if not current_session.exists():  #problem을 처음 열람할 시 session 생성
         current_user = user.objects.get(user_id = user_id)
-        cp = problem.objects.get(problem_id = problem_id) ## problem
-        session.objects.create(submission_count = 3, problem = cp, user = current_user) #세션은 프론트에 전달하지 않아도 될 것 같습니다.
+        cp = problem.objects.get(problem_id = problem_id)  # problem
+        session.objects.create(submission_count = 3, problem = cp, user = current_user)
 
     return Response([problem_serializer.data, test_serializer.data, code_serializer.data])
 
@@ -174,10 +171,8 @@ def run_specific_testcase(request):
         # user_code = "def solution(a,b,c):\n\treturn a+b+c"  #실행예시
         # input = [[1,2,3]]  # 모든 테스트 케이스 인풋 리스트
         # output = [6]  # 모든 테스트 케이스 아웃풋 리스트
-        testcase_result, user_output = run_specific_test(user_code, input_list, output_list)
+        testcase_result, user_output = run_specific_test(user_code, input_list, output_list, rand_name())
 
-
-    
         return Response({'result' : testcase_result[1], 'output' : user_output[1]})
     except Exception as e:
         return Response({'result' : "F", 'output' : "Unkwon Error"})

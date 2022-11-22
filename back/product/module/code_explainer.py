@@ -2,7 +2,7 @@
 
 import openai
 
-f = open('./openaisecrets.txt', 'r')
+f = open('./openai_api_key.txt', 'r')
 openai.api_key = f.read()
 f.close()
 
