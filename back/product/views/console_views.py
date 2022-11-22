@@ -11,6 +11,12 @@ from ..module.code_explainer import *
 import re
 
 
+def get_reference(problem_id):
+    references = problem.objects.get(problem_id=problem_id).reference
+    reference_list = re.split('[ |\r|\n]', references)
+    return {"references": reference_list}
+
+
 def grade(user_code, testcases):
     inputs = testcases.values_list('input', flat=True)  # 모든 테스트 케이스 인풋
     input_list = []
@@ -123,10 +129,21 @@ def submit_code(request):  # 코드 제출
     # 코드 설명 : openai
     openAIcodex_output = {"openai": explain_code(user_code)}
 
-    os.remove(file_name)  #임시 파일 삭제
+    # 표절 검사
+    plagiarism = None
 
-    return Response(
-        [testcase_result, pylama_output, multimetric_output, openAIcodex_output, solution_code])  # 프론트에 코드 채점 결과 전달
+    # 참고 링크
+    reference_list = {'reference': get_reference(problem_id)}
+
+    os.remove(file_name)  #임시 파일 삭제
+    # 정상 메세지
+    result = 'your code is successfully submitted'
+
+    return Response( # 프론트에 코드 채점 결과 전달
+        {'result': result, 'testcase_output':testcase_result, 'pylama_output':pylama_output,
+         'multimetric_output': multimetric_output, 'plagiarism':plagiarism,
+         'codex_output':openAIcodex_output, 'solution_code':solution_code, 'reference':reference_list})
+
 
 
 @api_view(['POST'])
@@ -134,13 +151,6 @@ def run_code(request):  # 코드 실행
     user_code = request.data['user_code']  # user가 작성한 코드
     is_success, line_number, message = execute(user_code)
     return Response({"success": is_success, "line_number": line_number, "message": message})  # 프론트에 코드 실행 결과 전달
-
-
-@api_view(['GET'])
-def get_reference(request, problem_id):
-    references = problem.objects.get(problem_id=problem_id).reference
-    reference_list = re.split('[ |\r|\n]', references)
-    return Response({"references": reference_list})
 
 
 @api_view(['POST'])
