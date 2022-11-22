@@ -1,7 +1,8 @@
 import unittest
 import os
 import sys
-
+import string
+import random
 '''
 run_test(user_code, input, output) 으로 테스트실행. 파라미터는 run_test 주석 참고.
 '''
@@ -11,6 +12,12 @@ output_list = {}  #모든 유저 아웃풋 저장
 '''
 둘 다 1,2,3,4,5를 키로 하는 딕셔너리
 '''
+
+
+def rand_name():
+    letters = string.ascii_lowercase
+    return ''.join(random.choice(letters) for i in range(10))
+
 
 class CaseTester(unittest.TestCase):
     user_class = None
@@ -75,7 +82,7 @@ class CaseTester(unittest.TestCase):
         output_list[5] = user_output
         self.assertEqual(user_output, self.outputs[4])
 
-def run_test(user_code, input, output):
+def run_test(user_code, input, output, file_name):
     """
 
     :param user_code: 유저가 작성한 코드, string
@@ -88,7 +95,10 @@ def run_test(user_code, input, output):
     unittest에서 사용가능한 형태로 usercode를 수정해서 로컬에 임시 저장함.
     solution() 상위에 class를 놓고, solution 첫 파라미터로 self를 넣음
     """
-    with open("temp_code.py", 'w') as f:
+
+
+
+    with open(file_name+'.py', 'w') as f:
         f.write("class UserCode:\n\t")
         for line in user_code.splitlines():
             idx = line.find("solution(")
@@ -97,7 +107,9 @@ def run_test(user_code, input, output):
             f.write("\n\t" + line)
         f.close()
 
-    import temp_code
+
+    mod_name = file_name
+    temp_code = __import__('%s' % (mod_name), fromlist=[mod_name])  #동적 임포트
     CaseTester.params = input
     CaseTester.user_class = temp_code.UserCode()
     CaseTester.outputs = output
@@ -114,15 +126,16 @@ def run_test(user_code, input, output):
     runner = unittest.TextTestRunner()
     runner.run(suite)
 
-    os.remove("temp_code.py")  # 임시 저장한 유저코드 파일 삭제
+    os.remove(file_name+'.py')  # 임시 저장한 유저코드 파일 삭제
 
     return [result_list, output_list]
 
-def run_specific_test(user_code, input, output):
+
+def run_specific_test(user_code, input, output, file_name):
     """run_test의 수정버전
         test case 1개만 선택해서 할 때 사용
     """
-    with open("temp_code.py", 'w') as f:
+    with open(file_name+'.py', 'w') as f:
         f.write("class UserCode:\n\t")
         for line in user_code.splitlines():
             idx = line.find("solution(")
@@ -131,7 +144,9 @@ def run_specific_test(user_code, input, output):
             f.write("\n\t" + line)
         f.close()
 
-    import temp_code
+
+    mod_name = file_name
+    temp_code = __import__('%s' % (mod_name), fromlist=[mod_name])  # 동적 임포트
     CaseTester.params = input
     CaseTester.user_class = temp_code.UserCode()
     CaseTester.outputs = output
@@ -143,7 +158,7 @@ def run_specific_test(user_code, input, output):
     runner = unittest.TextTestRunner()
     runner.run(suite)
 
-    os.remove("temp_code.py")  # 임시 저장한 유저코드 파일 삭제
+    os.remove(file_name+'.py')  # 임시 저장한 유저코드 파일 삭제
 
     return [result_list, output_list]
 
