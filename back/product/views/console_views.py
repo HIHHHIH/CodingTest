@@ -127,13 +127,13 @@ def submit_code(request):  # 코드 제출
     # {"mypy": [20, msg1, msg2, ...],"pylint": [20, msg1, msg2, ...],"eradicate": [20, msg1, msg2, ...],"radon": [20, msg1, msg2, ...],"pycodestyle": [20, msg1, msg2, ...]}
 
     # 코드 설명 : openai
-    openAIcodex_output = {"openai": explain_code(user_code)}
+    openAIcodex_output = explain_code(user_code)
 
     # 표절 검사
     plagiarism = None
 
     # 참고 링크
-    reference_list = {'reference': get_reference(problem_id)}
+    reference_list = get_reference(problem_id)
 
     os.remove(file_name)  #임시 파일 삭제
     # 정상 메세지
