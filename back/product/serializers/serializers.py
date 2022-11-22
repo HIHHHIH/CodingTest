@@ -59,3 +59,8 @@ class SessionSerializer(serializers.ModelSerializer):
     class Meta:
         model = session
         fields = '__all__'
+
+class referenceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = reference
+        fields = '__all__'

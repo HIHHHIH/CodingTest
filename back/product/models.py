@@ -29,7 +29,8 @@ class problem(models.Model):
     title = models.TextField()
     description = models.TextField()
     restriction = models.TextField(null = True)
-    reference = models.TextField(null = True)
+    # reference = models.TextField(null = True)
+    skeleton = models.TextField()
     timelimit = models.IntegerField()
     memorylimit = models.IntegerField()
 
@@ -38,6 +39,12 @@ class problem(models.Model):
 
     def written_code(self):
         return code.objects.filter(problem = self)
+
+class reference(models.Model):
+    reference_id = models.IntegerField(primary_key=True)
+    title = models.TextField()
+    url = models.TextField()
+    problem = models.ForeignKey(problem , on_delete=models.CASCADE)
 
 class testcase(models.Model):
     testcase_id = models.AutoField(primary_key=True)

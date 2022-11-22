@@ -6,4 +6,4 @@ class PostProblemSerializer(serializers.ModelSerializer):
         testcases = TestCaseSerializer(many=True, read_only = True, source="opened_testcase")
         class Meta:
             model = problem
-            fields = ('testcases', 'codes', 'problem_id','lecture' ,'assignment','title','description','restriction','reference','timelimit','memorylimit')
+            fields = ('testcases', 'codes', 'problem_id','lecture' ,'assignment','title','description','restriction', 'timelimit','memorylimit')

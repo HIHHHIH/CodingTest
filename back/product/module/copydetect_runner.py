@@ -86,8 +86,8 @@ class CopyDetect():
           "reference_directories" : [self.reference_dir],
           "boilerplate_directories" : [self.boilerplate_dir],
           "extensions" : ["py"], ## 확장자 명
-          "noise_threshold" : 1, ## 
-          "guarantee_threshold" : 1,
+          "noise_threshold" : 25, ## 
+          "guarantee_threshold" : 25, ##
           "display_threshold" : 0,
           "disable_autoopen" : True,
         }
@@ -99,7 +99,12 @@ class CopyDetect():
         for i in cp_code_list:
             plagiarism_rates.append(i[0])
         
+        result_rate = 0
         if len(plagiarism_rates) > 0:
-            return max(plagiarism_rates)
-        else:
-            return 0
+            result_rate = max(plagiarism_rates)
+        
+        copydetect_result = {
+            "plagiarism_rate" : result_rate
+        }
+
+        return copydetect_result

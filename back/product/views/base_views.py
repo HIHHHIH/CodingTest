@@ -175,4 +175,4 @@ def run_specific_testcase(request):
 
         return Response({'result' : testcase_result[1], 'output' : user_output[1]})
     except Exception as e:
-        return Response({'result' : "F", 'output' : "Unkwon Error"})
+        return Response({'result' : "F", 'output' : "Unknown Error"})
