@@ -117,7 +117,7 @@ def submit_code(request):  # 코드 제출
                           "halstead_score": halstead_score}
 
     # 가독성 검사 : pylama
-    pylama_output = pylama_run(user_code)
+    pylama_output = pylama_run(file_name)
     # {"mypy": [20, msg1, msg2, ...],"pylint": [20, msg1, msg2, ...],"eradicate": [20, msg1, msg2, ...],"radon": [20, msg1, msg2, ...],"pycodestyle": [20, msg1, msg2, ...]}
 
     # 코드 설명 : openai
