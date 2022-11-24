@@ -37,8 +37,8 @@ def grade(user_code, testcases):
     for i in range(3):
         case_result = {'result': '통과' if testcase_result[i] == 'P' else '실패',
                        'input': f'solution({",".join(str(num) for num in input_list[i])})',
-                       'correct output': str(output_list[i]),
-                       'your output': str(user_output[i])}
+                       'correct_output': str(output_list[i]),
+                       'your_output': str(user_output[i])}
         open_case_sum.append(case_result)
 
     # 히든 테스트 케이스
@@ -99,8 +99,8 @@ def submit_code(request):  # 코드 제출
     score, open_case_sum, hidden_case_sum = grade(user_code, testcases)
 
     testcase_result = {"score": score,
-                       "open results": open_case_sum,
-                       "hidden results": hidden_case_sum
+                       "open_results": open_case_sum,
+                       "hidden_results": hidden_case_sum
                        }
 
     # 효율성 검사 : multimetric
@@ -171,8 +171,8 @@ def grade_code(request):  # 코드 채점
     score, open_case_sum, hidden_case_sum = grade(user_code, testcases)
 
     result = {"score": score,
-              "open results": open_case_sum,
-              "hidden results": hidden_case_sum
+              "open_results": open_case_sum,
+              "hidden_results": hidden_case_sum
               }
 
     return Response(result)
