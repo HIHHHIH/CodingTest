@@ -2,14 +2,13 @@
 
 from pylama.main import parse_options, check_paths
 import os
-import pathlib
 
 def pylama_run(file_name):
     # set pylama options
-    my_path = str(pathlib.Path.cwd() / 'product' / 'views')
+    my_path = '.' # \CodingTest\back
     linters = ['mypy', 'pylint', 'eradicate', 'radon', 'pycodestyle']
     file_list = os.listdir(my_path) # 현재 폴더의 모든 파일 목록
-    file_list.remove(file_name) # 테스트 대상 파일만 제외 
+    file_list.remove(file_name) # 테스트 대상 파일만 제외
     skip_list = ','.join(file_list)
     my_redefined_options = {
         'linters': linters,
@@ -26,7 +25,7 @@ def pylama_run(file_name):
 
     # run pylama
     options = parse_options([my_path], **my_redefined_options)
-    errors = check_paths('.', options, rootdir=my_path)
+    errors = check_paths(my_path, options, rootdir='.')
     for e in errors:
         if (e.etype != 'N'):
             if pylama_result[e.source][0] > 0: # 감점
