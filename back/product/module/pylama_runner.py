@@ -6,7 +6,7 @@ import pathlib
 
 def pylama_run(file_name):
     # set pylama options
-    my_path = str(pathlib.Path.cwd().parent / 'views')
+    my_path = str(pathlib.Path.cwd() / 'product' / 'views')
     linters = ['mypy', 'pylint', 'eradicate', 'radon', 'pycodestyle']
     file_list = os.listdir(my_path) # 현재 폴더의 모든 파일 목록
     file_list.remove(file_name) # 테스트 대상 파일만 제외 
