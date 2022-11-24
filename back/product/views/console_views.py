@@ -59,8 +59,8 @@ def submit_code(request):  # 코드 제출
     '''
            {
                "problem_id": 1,
-               "user_id": 1,
-               "user_code": "def solution(a,b, c):\n\td=a*b*c\n\treturn d",
+               "user_id": 0,
+               "user_code": "def solution(a,b):\n\td=a*b\n\treturn d",
                "code_idx": "2"
            }
    '''
