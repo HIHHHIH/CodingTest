@@ -4,7 +4,7 @@ import openai
 import os
 import pathlib
 
-key_file = pathlib.Path.cwd() / 'openai_api_key.txt'
+key_file = pathlib.Path.cwd() / 'openai_api_key.txt' # \CodingTest\back
 openai.api_key = key_file.read_text(encoding='utf-8')
 
 comment = "\n\n\"\"\"\nHere's what the above function is doing:\n 1."
