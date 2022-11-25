@@ -82,14 +82,18 @@ def get_main_page(request, problem_id, user_id):
     testcases = testcase.objects.filter(problem_id=problem_id)
     test_serializer = TestCaseSerializer(testcases, many=True)
 
-    current_code = code.objects.filter(user_id=user_id).filter(problem_id=problem_id)
-    code_serializer = CodeSerializer(current_code, many=True)
-
     current_session = session.objects.filter(user_id=user_id, problem_id = problem_id)
     if not current_session.exists():  #problem을 처음 열람할 시 session 생성
         current_user = user.objects.get(user_id = user_id)
         cp = problem.objects.get(problem_id = problem_id)  # problem
         session.objects.create(submission_count = 3, problem = cp, user = current_user)
+
+        code.obeject.create(problem = cp, user = current_user, code_idx = 1, user_code = cp.skeleton )
+        code.obeject.create(problem = cp, user = current_user, code_idx = 2, user_code = cp.skeleton )
+        code.obeject.create(problem = cp, user = current_user, code_idx = 3, user_code = cp.skeleton )
+
+    current_code = code.objects.filter(user_id=user_id).filter(problem_id=problem_id)
+    code_serializer = CodeSerializer(current_code, many=True)
 
     return Response([problem_serializer.data, test_serializer.data, code_serializer.data])
 
