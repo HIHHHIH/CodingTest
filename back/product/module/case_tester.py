@@ -25,7 +25,7 @@ class CaseTester(unittest.TestCase):
     outputs = None
 
     def setUp(self):  # 각 테스트 전마다 자동 실행
-        pass
+        self.test_num = int(self.id()[-1]) - 1  # 테스트케이스번호
 
     def tearDown(self):  #각 테스트 후마다 자동 실행
         global result_list
@@ -38,48 +38,46 @@ class CaseTester(unittest.TestCase):
             # Python 3.11+
             result = self._outcome.result
 
-        test_num = int(self.id()[-1])  #테스트케이스번호
-
         ok = all(test != self for test, text in result.errors + result.failures)
 
         if ok:  #테스트 통과하면 'P'로 저장
-            result_list[test_num] = 'P'
+            result_list[self.test_num] = 'P'
         else:  #테스트 실패하면 'F'로 저장
-            result_list[test_num] = 'F'
+            result_list[self.test_num] = 'F'
 
     def test_case1(self):  #test_로 시작하는 method는 unittest.main()실행하면 알아서 테스트함.
 
         user_output = self.user_class.solution(*self.params[0])
         global output_list
-        output_list[1] = user_output
+        output_list[self.test_num] = user_output
         self.assertEqual(user_output, self.outputs[0])
 
     def test_case2(self):
 
         user_output = self.user_class.solution(*self.params[1])
         global output_list
-        output_list[2] = user_output
+        output_list[self.test_num] = user_output
         self.assertEqual(user_output, self.outputs[1])
 
     def test_case3(self):
 
         user_output = self.user_class.solution(*self.params[2])
         global output_list
-        output_list[3] = user_output
+        output_list[self.test_num] = user_output
         self.assertEqual(user_output, self.outputs[2])
 
     def test_case4(self):
 
         user_output = self.user_class.solution(*self.params[3])
         global output_list
-        output_list[4] = user_output
+        output_list[self.test_num] = user_output
         self.assertEqual(user_output, self.outputs[3])
 
     def test_case5(self):
 
         user_output = self.user_class.solution(*self.params[4])
         global output_list
-        output_list[5] = user_output
+        output_list[self.test_num] = user_output
         self.assertEqual(user_output, self.outputs[4])
 
 def run_test(user_code, input, output, file_name):

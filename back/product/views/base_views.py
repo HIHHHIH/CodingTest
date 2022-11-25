@@ -11,7 +11,6 @@ from ..module.case_tester import run_specific_test, rand_name
 import json
 # Create your views here.
 
-RECENT = 'recently accessed user to a problem'
 
 @api_view(['GET'])
 def helloAPI(request):
@@ -19,18 +18,21 @@ def helloAPI(request):
 
 
 @api_view(['GET'])
-def get_recent(request):
+def get_recent(request, user_id):
 
-    user_id, problem_id = request.session[RECENT]  #세션에서 문제와 유저 ID 가져오기
+    problem_id = request.session.get(user_id)  #세션에서 문제 가져오기
+
     if problem_id is None:
-        return Response({'result':'no recent access'})
-    problems = problem.objects.filter(problem_id=problem_id)
+        problems = problem.objects.filter(problem_id=0)
+        testcases = testcase.objects.filter(problem_id=0)
+        current_code = code.objects.filter(user_id=user_id).filter(problem_id=0)
+    else:
+        problems = problem.objects.filter(problem_id=problem_id)
+        testcases = testcase.objects.filter(problem_id=problem_id)
+        current_code = code.objects.filter(user_id=user_id).filter(problem_id=problem_id)
+
     problem_serializer = ProblemSerializer(problems, many=True)
-
-    testcases = testcase.objects.filter(problem_id=problem_id)
     test_serializer = TestCaseSerializer(testcases, many=True)
-
-    current_code = code.objects.filter(user_id=user_id).filter(problem_id=problem_id)
     code_serializer = CodeSerializer(current_code, many=True)
 
     return Response([problem_serializer.data, test_serializer.data, code_serializer.data])
@@ -77,7 +79,7 @@ def get_main_page(request, problem_id, user_id):
     current_problem = problem.objects.filter(problem_id= problem_id )
     problem_serializer = ProblemSerializer(current_problem, many=True)
 
-    request.session[RECENT] = user_id, problem_id  #세션에 지금 접속한 user_id와 problem_id 저장
+    request.session[user_id] = problem_id  #세션에 지금 접속한 user_id의 problem_id 저장
 
     testcases = testcase.objects.filter(problem_id=problem_id)
     test_serializer = TestCaseSerializer(testcases, many=True)
@@ -171,12 +173,12 @@ def run_specific_testcase(request):
         else :
             output_list.append(int(output))
 
-
+        
         # user_code = "def solution(a,b,c):\n\treturn a+b+c"  #실행예시
         # input = [[1,2,3]]  # 모든 테스트 케이스 인풋 리스트
         # output = [6]  # 모든 테스트 케이스 아웃풋 리스트
         testcase_result, user_output = run_specific_test(user_code, input_list, output_list, rand_name())
 
-        return Response({'result' : testcase_result[1], 'output' : user_output[1]})
+        return Response({'result' : testcase_result[0], 'output' : user_output[0]})
     except Exception as e:
-        return Response({'result' : "F", 'output' : "Unkwon Error"})
+        return Response({'result' : "F", 'output' : "Unknown Error"})

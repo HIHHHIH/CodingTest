@@ -1,10 +1,11 @@
 #-*- coding:utf-8 -*-
 
 import openai
+import os
+import pathlib
 
-f = open('./openai_api_key.txt', 'r')
-openai.api_key = f.read()
-f.close()
+key_file = pathlib.Path.cwd() / 'openai_api_key.txt' # \CodingTest\back
+openai.api_key = key_file.read_text(encoding='utf-8')
 
 comment = "\n\n\"\"\"\nHere's what the above function is doing:\n 1."
 
