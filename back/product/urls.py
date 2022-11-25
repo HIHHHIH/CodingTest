@@ -13,7 +13,7 @@ urlpatterns = [
     path("problem/", base_views.info_problem),
     path("testcase/", base_views.run_specific_testcase),
 
-    path('recent/', base_views.get_recent),
+    path('recent/<int:user_id>/', base_views.get_recent),
 
     path("load/", base_views.load_code),
     path('save/', editor_views.save_code),
