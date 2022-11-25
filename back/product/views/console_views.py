@@ -7,6 +7,7 @@ from ..module.pylama_runner import *
 from ..module.case_tester import *
 from ..module.multimetric_runner import *
 from ..module.code_explainer import *
+from ..module.copydetect_runner import *
 
 import re
 
@@ -123,14 +124,23 @@ def submit_code(request):  # 코드 제출
 
     # 가독성 검사 : pylama
     pylama_output = None
-    #pylama_output = pylama_run(file_name)
+    pylama_output = pylama_run(file_name)
     # {"mypy": [20, msg1, msg2, ...],"pylint": [20, msg1, msg2, ...],"eradicate": [20, msg1, msg2, ...],"radon": [20, msg1, msg2, ...],"pycodestyle": [20, msg1, msg2, ...]}
 
     # 코드 설명 : openai
     openAIcodex_output = explain_code(user_code)
 
     # 표절 검사
-    plagiarism = None
+    reference_codes = code.objects.filter(problem_id=problem_id)
+    reference_codes_i = []
+    for i in reference_codes:
+        if(i.user.user_id != user_id and i.code_idx > 3):
+            reference_codes_i.append(i.user_code)
+    skeleton_code = problem.objects.get(problem_id=problem_id).skeleton
+    plagiarism_detector = CopyDetect(user_id,problem_id,user_code,reference_codes_i,skeleton_code)
+    plagiarism_detector.setup()
+    plagiarism = plagiarism_detector.run_detector()
+    plagiarism_detector.teardown()
 
     # 참고 링크
     reference_list = None

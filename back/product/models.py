@@ -29,7 +29,6 @@ class problem(models.Model):
     title = models.TextField()
     description = models.TextField()
     restriction = models.TextField(null = True)
-    # reference = models.TextField(null = True)
     skeleton = models.TextField()
     timelimit = models.IntegerField()
     memorylimit = models.IntegerField()
