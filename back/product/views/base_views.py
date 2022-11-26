@@ -81,17 +81,21 @@ def get_main_page(request, problem_id, user_id):
 
     request.session[user_id] = problem_id  #세션에 지금 접속한 user_id의 problem_id 저장
 
-    testcases = testcase.objects.filter(problem_id=problem_id)
+    testcases = testcase.objects.filter(problem_id=problem_id, isHidden=False)
     test_serializer = TestCaseSerializer(testcases, many=True)
-
-    current_code = code.objects.filter(user_id=user_id).filter(problem_id=problem_id)
-    code_serializer = CodeSerializer(current_code, many=True)
 
     current_session = session.objects.filter(user_id=user_id, problem_id = problem_id)
     if not current_session.exists():  #problem을 처음 열람할 시 session 생성
         current_user = user.objects.get(user_id = user_id)
         cp = problem.objects.get(problem_id = problem_id)  # problem
         session.objects.create(submission_count = 3, problem = cp, user = current_user)
+
+        code.objects.create(problem = cp, user = current_user, code_idx = 1, user_code = cp.skeleton )
+        code.objects.create(problem = cp, user = current_user, code_idx = 2, user_code = cp.skeleton )
+        code.objects.create(problem = cp, user = current_user, code_idx = 3, user_code = cp.skeleton )
+
+    current_code = code.objects.filter(user_id=user_id).filter(problem_id=problem_id)
+    code_serializer = CodeSerializer(current_code, many=True)
 
     return Response([problem_serializer.data, test_serializer.data, code_serializer.data])
 
@@ -169,7 +173,7 @@ def run_specific_testcase(request):
         else :
             output_list.append(int(output))
 
-        
+
         # user_code = "def solution(a,b,c):\n\treturn a+b+c"  #실행예시
         # input = [[1,2,3]]  # 모든 테스트 케이스 인풋 리스트
         # output = [6]  # 모든 테스트 케이스 아웃풋 리스트
