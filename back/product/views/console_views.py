@@ -74,20 +74,10 @@ def submit_code(request):  # 코드 제출
     if current_session.submission_count == 0:
         return Response({"result": "you can't submit more than 3 times."})
 
-    current_session.submission_count -= 1
-    current_session.save()
-    code_slot = 6 - current_session.submission_count
-    # 제출한 코드 DB에 저장
-    request.data["code_idx"] = code_slot
-    serializer = CodeSerializer(data=request.data)
-    if serializer.is_valid():
-        serializer.save()
-
     file_name = rand_name()+'.py'  #유저가 작성한 코드를 랜덤한 이름의 임시 파일로 저장함.
     with open(file_name, 'w') as f:
         f.write(user_code)
         f.close()
-
 
     # 테스트 케이스 채점
     testcases = testcase.objects.filter(problem=problem_id)
@@ -145,9 +135,7 @@ def submit_code(request):  # 코드 제출
     reference_list = []
     references = reference.objects.filter(problem=problem_id)  #make iterable
     for item in references.values():
-        ref = {}
-        ref['title'] = item['title']
-        ref['url'] = item['url']
+        ref = {'title': item['title'], 'url': item['url']}
         reference_list.append(ref)
     """
     [
@@ -165,6 +153,17 @@ def submit_code(request):  # 코드 제출
     }
     """
     os.remove(file_name)  #임시 파일 삭제
+
+    # 제출 횟수 차감
+    current_session.submission_count -= 1
+    current_session.save()
+    code_slot = 6 - current_session.submission_count
+    # 제출한 코드 DB에 저장
+    request.data["code_idx"] = code_slot
+    serializer = CodeSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+
     # 정상 메세지
     result = 'your code is successfully submitted'
 
