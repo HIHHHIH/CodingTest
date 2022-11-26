@@ -12,12 +12,6 @@ from ..module.copydetect_runner import *
 import re
 
 
-def get_reference(problem_id):
-    references = problem.objects.get(problem_id=problem_id).reference
-    reference_list = re.split('[ |\r|\n]', references)
-    return {"references": reference_list}
-
-
 def grade(user_code, testcases):
     inputs = testcases.values_list('input', flat=True)  # 모든 테스트 케이스 인풋
     input_list = []
@@ -123,10 +117,15 @@ def submit_code(request):  # 코드 제출
                           "halstead_score": halstead_score}
 
     # 가독성 검사 : pylama
-    pylama_output = None
     pylama_output = pylama_run(file_name)
-    # {"mypy": [20, msg1, msg2, ...],"pylint": [20, msg1, msg2, ...],"eradicate": [20, msg1, msg2, ...],"radon": [20, msg1, msg2, ...],"pycodestyle": [20, msg1, msg2, ...]}
-
+    """
+    {"mypy": {"score": 점수, "msg": ["msg1", "msg2", ...]},
+    "pylint": {"score": 점수, "msg": ["msg1", "msg2", ...]},
+    "eradicate": {"score": 점수, "msg": ["msg1", "msg2", ...]},
+    "radon": {"score": 점수, "msg": ["msg1", "msg2", ...]},
+    "pycodestyle": {"score": 점수, "msg": ["msg1", "msg2", ...]}
+    }
+    """
     # 코드 설명 : openai
     openAIcodex_output = explain_code(user_code)
 
@@ -143,9 +142,28 @@ def submit_code(request):  # 코드 제출
     plagiarism_detector.teardown()
 
     # 참고 링크
-    reference_list = None
-    #reference_list = get_reference(problem_id)
-
+    reference_list = []
+    references = reference.objects.filter(problem=problem_id)  #make iterable
+    for item in references.values():
+        ref = {}
+        ref['title'] = item['title']
+        ref['url'] = item['url']
+        reference_list.append(ref)
+    """
+    [
+    {
+    'title': string,
+    'url': string
+    },
+    {
+    'title': string,
+    'url': string
+    },
+    {
+    'title': string,
+    'url': string
+    }
+    """
     os.remove(file_name)  #임시 파일 삭제
     # 정상 메세지
     result = 'your code is successfully submitted'
