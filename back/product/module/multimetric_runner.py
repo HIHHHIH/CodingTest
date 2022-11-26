@@ -11,7 +11,7 @@ def multimetric_run(user_code):
     # result file saved as /CodingTest/back/multimetric_result.json
     os.system("multimetric ./user_code.py > multimetric_result.json")
 
-    with open('./multimetric_result.json', 'r') as result:
+    with open('./multimetric_result.json', 'r', encoding='UTF-8') as result:
         data = json.load(result)
 
     # parse the result
