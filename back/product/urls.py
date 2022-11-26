@@ -20,7 +20,6 @@ urlpatterns = [
 
     path('<str:user_id>/<int:problem_id>/', base_views.get_main_page),
 
-    path('problem/<int:problem_id>/reference/', console_views.get_reference),
     path('run/', console_views.run_code),
     path('grade/', console_views.grade_code),
     path('submit/',console_views.submit_code),
