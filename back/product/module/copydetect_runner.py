@@ -76,11 +76,15 @@ class CopyDetect():
         os.rmdir(self.code_dir)
         os.rmdir(self.reference_dir)
         os.rmdir(self.boilerplate_dir)
-        os.rmdir(self.dir_name)
+        os.rmdir(join(TESTS_DIR,self.dir_name))
 
         return
 
     def run_detector(self): ## copy detect run
+        if len(self.reference) == 0:
+            return {
+                "plagiarism_rate" : 0
+            }
         config = {
           "test_directories" : [self.code_dir],
           "reference_directories" : [self.reference_dir],
