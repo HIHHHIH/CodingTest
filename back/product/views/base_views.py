@@ -1,15 +1,10 @@
 # -*- coding: utf-8 -*-
 from django.views.decorators.csrf import csrf_exempt
-from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from ..models import *
-from ..serializers.serializers import *
 from ..serializers.base_serializers import *
-from ..module.case_tester import run_specific_test, rand_name
-import json
-# Create your views here.
+from ..module.case_tester import run_test, rand_name
 
 
 @api_view(['GET'])
@@ -173,12 +168,11 @@ def run_specific_testcase(request):
         else :
             output_list.append(int(output))
 
-
         # user_code = "def solution(a,b,c):\n\treturn a+b+c"  #실행예시
         # input = [[1,2,3]]  # 모든 테스트 케이스 인풋 리스트
         # output = [6]  # 모든 테스트 케이스 아웃풋 리스트
-        testcase_result, user_output = run_specific_test(user_code, input_list, output_list, rand_name())
+        msg, testcase_result, user_output = run_test('single', user_code, input_list, output_list, rand_name())
 
         return Response({'result' : testcase_result[0], 'output' : user_output[0]})
     except Exception as e:
-        return Response({'result' : "F", 'output' : "Unknown Error"})
+        return Response({'result' : "F", 'output' : "Error"})
