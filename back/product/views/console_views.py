@@ -13,6 +13,7 @@ import re
 
 
 def grade(user_code, testcases):
+
     inputs = testcases.values_list('input', flat=True)  # 모든 테스트 케이스 인풋
     input_list = []
     for input in inputs:
@@ -22,14 +23,7 @@ def grade(user_code, testcases):
     outputs = list(testcases.values_list('output', flat=True))
     output_list = list(map(int, outputs))
 
-    try:
-        msg, testcase_result, user_output = run_test('whole',user_code, input_list, output_list, rand_name())
-    except Exception as e:
-        msg = {'result':'execution_error', 'detail': 'your code has error(s).'}
-        return msg, 0, {},{}
-
-    if msg['result'] != 'pass':
-        return msg, 0, [], []
+    testcase_result, user_output = run_test('whole',user_code, input_list, output_list, rand_name())
 
     # 채점 점수
     score = sum(20 for value in testcase_result.values() if value == 'P')
@@ -55,6 +49,11 @@ def grade(user_code, testcases):
         case_result = {'result': '통과' if testcase_result[i] == 'P' else '실패'}
         hidden_case_sum.append(case_result)
 
+    # 모든 테스트 케이스에서 에러가 발생한 경우 따로 처리
+    if all(result == 'E' for result in testcase_result.values()):
+        msg = 'all_error'
+    else:
+        msg = 'ok'
     return msg, score, open_case_sum, hidden_case_sum
 
 
@@ -85,26 +84,27 @@ def submit_code(request):  # 코드 제출
 
     #잔여 제출 횟수가 없다면 제출 못함.
     if current_session.submission_count == 0:
-        return Response({"result": "you can't submit more than 3 times."})
-
-    file_name = rand_name()+'.py'  #유저가 작성한 코드를 랜덤한 이름의 임시 파일로 저장함.
-    with open(file_name, 'w') as f:
-        f.write(user_code)
-        f.close()
+        result = {'msg': 'fail', 'detail': 'you can\'t submit more than 3 times.'}
+        return Response({"result": result})
 
     # 테스트 케이스 채점
     testcases = testcase.objects.filter(problem=problem_id)
     msg, score, open_case_sum, hidden_case_sum = grade(user_code, testcases)
 
-    if msg['result'] == 'execution_error':
-        result = {'msg': 'fail', 'detail': 'your code is not executable.'}
-        return Response({'result': result})
+    if msg == 'all_error':
+        result = {'msg': 'fail', 'detail': 'your code has error(s).'}
+        return Response(result)
 
-    testcase_result = {"msg": msg,
-                       "score": score,
+    testcase_result = {"score": score,
                        "open_results": open_case_sum,
                        "hidden_results": hidden_case_sum
                        }
+
+    # 유저가 작성한 코드를 랜덤한 이름의 임시 파일로 저장함.
+    file_name = rand_name()+'.py'
+    with open(file_name, 'w') as f:
+        f.write(user_code)
+        f.close()
 
     # 효율성 검사 : multimetric
     user_halstead, user_loc, user_control_complexity, user_data_complexity = multimetric_run(user_code)
@@ -201,11 +201,7 @@ def grade_code(request):  # 코드 채점
 
     msg, score, open_case_sum, hidden_case_sum = grade(user_code, testcases)
 
-    if msg['result'] != 'pass':
-        return Response({'msg':msg})
-
-    result = {'msg': msg,
-              "score": score,
+    result = {"score": score,
               "open_results": open_case_sum,
               "hidden_results": hidden_case_sum
               }
