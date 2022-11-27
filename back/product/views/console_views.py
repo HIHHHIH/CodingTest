@@ -22,16 +22,29 @@ def grade(user_code, testcases):
     outputs = list(testcases.values_list('output', flat=True))
     output_list = list(map(int, outputs))
 
-    testcase_result, user_output = run_test(user_code, input_list, output_list, rand_name())
+    try:
+        msg, testcase_result, user_output = run_test('whole',user_code, input_list, output_list, rand_name())
+    except Exception as e:
+        msg = {'result':'execution_error', 'detail': 'your code has error(s).'}
+        return msg, 0, {},{}
+
+    if msg['result'] != 'pass':
+        return msg, 0, [], []
 
     # 채점 점수
     score = sum(20 for value in testcase_result.values() if value == 'P')
 
     # 오픈 테스트 케이스
     open_case_sum = []
-    for i in range(3):
-        case_result = {'result': '통과' if testcase_result[i] == 'P' else '실패',
-                       'input': f'solution({",".join(str(num) for num in input_list[i])})',
+    for i in range(2):
+        if testcase_result[i] == 'P':
+            result = '통과'
+        elif testcase_result[i] == 'E':
+            result = '에러'
+        else:
+            result = '실패'
+
+        case_result = {'result': result,
                        'correct_output': str(output_list[i]),
                        'your_output': str(user_output[i])}
         open_case_sum.append(case_result)
@@ -42,7 +55,7 @@ def grade(user_code, testcases):
         case_result = {'result': '통과' if testcase_result[i] == 'P' else '실패'}
         hidden_case_sum.append(case_result)
 
-    return score, open_case_sum, hidden_case_sum
+    return msg, score, open_case_sum, hidden_case_sum
 
 
 @api_view(['POST'])
@@ -81,9 +94,14 @@ def submit_code(request):  # 코드 제출
 
     # 테스트 케이스 채점
     testcases = testcase.objects.filter(problem=problem_id)
-    score, open_case_sum, hidden_case_sum = grade(user_code, testcases)
+    msg, score, open_case_sum, hidden_case_sum = grade(user_code, testcases)
 
-    testcase_result = {"score": score,
+    if msg['result'] == 'execution_error':
+        result = {'msg': 'fail', 'detail': 'your code is not executable.'}
+        return Response({'result': result})
+
+    testcase_result = {"msg": msg,
+                       "score": score,
                        "open_results": open_case_sum,
                        "hidden_results": hidden_case_sum
                        }
@@ -137,21 +155,7 @@ def submit_code(request):  # 코드 제출
     for item in references.values():
         ref = {'title': item['title'], 'url': item['url']}
         reference_list.append(ref)
-    """
-    [
-    {
-    'title': string,
-    'url': string
-    },
-    {
-    'title': string,
-    'url': string
-    },
-    {
-    'title': string,
-    'url': string
-    }
-    """
+
     os.remove(file_name)  #임시 파일 삭제
 
     # 제출 횟수 차감
@@ -165,9 +169,9 @@ def submit_code(request):  # 코드 제출
         serializer.save()
 
     # 정상 메세지
-    result = 'your code is successfully submitted'
+    result = {'msg': 'ok', 'detail': 'your code is successfully submitted'}
 
-    return Response( # 프론트에 코드 채점 결과 전달
+    return Response(  # 프론트에 코드 채점 결과 전달
         {'result': result, 'testcase_output':testcase_result, 'pylama_output':pylama_output,
          'multimetric_output': multimetric_output, 'plagiarism':plagiarism,
          'codex_output':openAIcodex_output, 'solution_code':solution_code, 'reference':reference_list})
@@ -195,9 +199,13 @@ def grade_code(request):  # 코드 채점
     problem_id = request.data['problem_id']
     testcases = testcase.objects.filter(problem=problem_id).order_by('idx')
 
-    score, open_case_sum, hidden_case_sum = grade(user_code, testcases)
+    msg, score, open_case_sum, hidden_case_sum = grade(user_code, testcases)
 
-    result = {"score": score,
+    if msg['result'] != 'pass':
+        return Response({'msg':msg})
+
+    result = {'msg': msg,
+              "score": score,
               "open_results": open_case_sum,
               "hidden_results": hidden_case_sum
               }
