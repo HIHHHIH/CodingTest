@@ -43,53 +43,40 @@ class CaseTester(unittest.TestCase):
             error = any(test == self for test, text in result.errors)
             if error:  #실행 오류면 'E'로 저장
                 result_list[self.test_num] = 'E'
+                output_list[self.test_num] = 'Error'
             else:  #아웃풋이 틀리면 'F'로 저장
                 result_list[self.test_num] = 'F'
 
     def test_case1(self):  #test_로 시작하는 method는 unittest.main()실행하면 알아서 테스트함.
         global output_list
-        try:
-            user_output = self.solution(*self.params[self.test_num])
-        except Exception as e:
-            user_output = 'Error'
+        user_output = self.solution(*self.params[self.test_num])
         output_list[self.test_num] = user_output
         self.assertEqual(user_output, self.outputs[self.test_num])
 
     def test_case2(self):
         global output_list
-        try:
-            user_output = self.solution(*self.params[self.test_num])
-        except Exception as e:
-            user_output = 'Error'
+        user_output = self.solution(*self.params[self.test_num])
         output_list[self.test_num] = user_output
         self.assertEqual(user_output, self.outputs[self.test_num])
 
     def test_case3(self):
         global output_list
-        try:
-            user_output = self.solution(*self.params[self.test_num])
-        except Exception as e:
-            user_output = 'Error'
+        user_output = self.solution(*self.params[self.test_num])
         output_list[self.test_num] = user_output
         self.assertEqual(user_output, self.outputs[self.test_num])
 
     def test_case4(self):
         global output_list
-        try:
-            user_output = self.solution(*self.params[self.test_num])
-        except Exception as e:
-            user_output = 'Error'
+        user_output = self.solution(*self.params[self.test_num])
         output_list[self.test_num] = user_output
         self.assertEqual(user_output, self.outputs[self.test_num])
 
     def test_case5(self):
         global output_list
-        try:
-            user_output = self.solution(*self.params[self.test_num])
-        except Exception as e:
-            user_output = 'Error'
+        user_output = self.solution(*self.params[self.test_num])
         output_list[self.test_num] = user_output
         self.assertEqual(user_output, self.outputs[self.test_num])
+
 
 def run_test(mode ,user_code, input, output, file_name):
     """
@@ -132,7 +119,7 @@ def run_test(mode ,user_code, input, output, file_name):
 
     os.remove(file_name+'.py')  # 임시 저장한 유저코드 파일 삭제
 
-    return [{'result':'ok'}, result_list, output_list]
+    return [result_list, output_list]
 
 ''' run_test에 통합함.
 def run_specific_test(user_code, input, output, file_name):
