@@ -16,10 +16,12 @@ def grade(user_code, testcases):
 
     inputs = testcases.values_list('input', flat=True)  # 모든 테스트 케이스 인풋
     input_list = []
+    input_string_list = []
     for input in inputs:
         temp_list = input.split(" ")
         int_input = list(map(int, temp_list))  # string을 int로 변환
         input_list.append(int_input)
+        input_string_list.append('solution(' + ','.join(temp_list) + ')')
     outputs = list(testcases.values_list('output', flat=True))
     output_list = list(map(int, outputs))
 
@@ -39,6 +41,7 @@ def grade(user_code, testcases):
             result = '실패'
 
         case_result = {'result': result,
+                       'input' : str(input_string_list[i]),
                        'correct_output': str(output_list[i]),
                        'your_output': str(user_output[i])}
         open_case_sum.append(case_result)
@@ -103,9 +106,9 @@ def submit_code(request):  # 코드 제출
     # 유저가 작성한 코드를 랜덤한 이름의 임시 파일로 저장함.
     file_name = rand_name()+'.py'
     with open(file_name, 'w') as f:
-        f.write(user_code)
+        for line in user_code.splitlines():
+            f.write(line+'\n')
         f.close()
-
     # 효율성 검사 : multimetric
     user_halstead, user_loc, user_control_complexity, user_data_complexity = multimetric_run(user_code)
     sol_halstead, sol_loc, sol_control_complexity, sol_data_complexity = multimetric_run(solution_code)
@@ -156,7 +159,7 @@ def submit_code(request):  # 코드 제출
         ref = {'title': item['title'], 'url': item['url']}
         reference_list.append(ref)
 
-    os.remove(file_name)  #임시 파일 삭제
+    #os.remove(file_name)  #임시 파일 삭제
 
     # 제출 횟수 차감
     current_session.submission_count -= 1
