@@ -25,7 +25,9 @@ def grade(user_code, testcases):
     outputs = list(testcases.values_list('output', flat=True))
     output_list = list(map(int, outputs))
 
-    testcase_result, user_output = run_test('whole',user_code, input_list, output_list, rand_name())
+    msg, testcase_result, user_output = run_test('whole',user_code, input_list, output_list, rand_name())
+    test_success = True
+
 
     # 채점 점수
     score = sum(20 for value in testcase_result.values() if value == 'P')
@@ -41,9 +43,9 @@ def grade(user_code, testcases):
             result = '실패'
 
         case_result = {'result': result,
-                       'input' : str(input_string_list[i]),
+                       'input': str(input_string_list[i]),
                        'correct_output': str(output_list[i]),
-                       'your_output': str(user_output[i])}
+                       'your_output': str(user_output[i]) if test_success else 'Error'}
         open_case_sum.append(case_result)
 
     # 히든 테스트 케이스
@@ -87,7 +89,7 @@ def submit_code(request):  # 코드 제출
 
     #잔여 제출 횟수가 없다면 제출 못함.
     if current_session.submission_count == 0:
-        result = {'msg': 'fail', 'detail': 'you can\'t submit more than 3 times.'}
+        result = {'msg': 'no_submission_left', 'detail': 'you can\'t submit more than 3 times.'}
         return Response({"result": result})
 
     # 테스트 케이스 채점
@@ -96,7 +98,7 @@ def submit_code(request):  # 코드 제출
 
     if msg == 'all_error':
         result = {'msg': 'fail', 'detail': 'your code has error(s).'}
-        return Response(result)
+        return Response({'result': result})
 
     testcase_result = {"score": score,
                        "open_results": open_case_sum,
@@ -159,7 +161,7 @@ def submit_code(request):  # 코드 제출
         ref = {'title': item['title'], 'url': item['url']}
         reference_list.append(ref)
 
-    #os.remove(file_name)  #임시 파일 삭제
+    os.remove(file_name)  #임시 파일 삭제
 
     # 제출 횟수 차감
     current_session.submission_count -= 1
