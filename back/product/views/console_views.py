@@ -106,9 +106,9 @@ def submit_code(request):  # 코드 제출
     # 유저가 작성한 코드를 랜덤한 이름의 임시 파일로 저장함.
     file_name = rand_name()+'.py'
     with open(file_name, 'w') as f:
-        f.write(user_code)
+        for line in user_code.splitlines():
+            f.write(line+'\n')
         f.close()
-
     # 효율성 검사 : multimetric
     user_halstead, user_loc, user_control_complexity, user_data_complexity = multimetric_run(user_code)
     sol_halstead, sol_loc, sol_control_complexity, sol_data_complexity = multimetric_run(solution_code)
@@ -159,7 +159,7 @@ def submit_code(request):  # 코드 제출
         ref = {'title': item['title'], 'url': item['url']}
         reference_list.append(ref)
 
-    os.remove(file_name)  #임시 파일 삭제
+    #os.remove(file_name)  #임시 파일 삭제
 
     # 제출 횟수 차감
     current_session.submission_count -= 1
