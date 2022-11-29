@@ -16,10 +16,12 @@ def grade(user_code, testcases):
 
     inputs = testcases.values_list('input', flat=True)  # 모든 테스트 케이스 인풋
     input_list = []
+    input_string_list = []
     for input in inputs:
         temp_list = input.split(" ")
         int_input = list(map(int, temp_list))  # string을 int로 변환
         input_list.append(int_input)
+        input_string_list.append('solution(' + ','.join(temp_list) + ')')
     outputs = list(testcases.values_list('output', flat=True))
     output_list = list(map(int, outputs))
 
@@ -39,6 +41,7 @@ def grade(user_code, testcases):
             result = '실패'
 
         case_result = {'result': result,
+                       'input' : str(input_string_list[i]),
                        'correct_output': str(output_list[i]),
                        'your_output': str(user_output[i])}
         open_case_sum.append(case_result)
