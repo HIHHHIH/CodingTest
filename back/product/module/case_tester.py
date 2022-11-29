@@ -94,12 +94,9 @@ def run_test(mode ,user_code, input, output, file_name):
         f.close()
 
     mod_name = file_name
-    temp_code = __import__('%s' % (mod_name), fromlist=[mod_name])  #동적 임포트
+    temp_code = __import__('%s' % (mod_name), fromlist=[mod_name])  # 동적 임포트
     CaseTester.params = input
-    try:
-        CaseTester.solution = temp_code.solution
-    except Exception as e:
-        return [{'result': 'skeleton_error', 'detail': 'the method name should be solution.'}, {}, {}]
+    CaseTester.solution = temp_code.solution
     CaseTester.outputs = output
 
     suite = unittest.TestSuite()
@@ -112,14 +109,14 @@ def run_test(mode ,user_code, input, output, file_name):
     elif mode == 'single':
         suite.addTest(CaseTester("test_case1"))
     else:
-        return [{'result':'mode_error','detail':'mode should be either "single" or "whole".'},{},{}]
+        return [{'result':'mode_error','detail':'mode should be either "single" or "whole".'},{}, {}]
 
     runner = unittest.TextTestRunner()
     runner.run(suite)
 
     os.remove(file_name+'.py')  # 임시 저장한 유저코드 파일 삭제
-
-    return [result_list, output_list]
+    msg = {'result': 'ok', 'detail': 'successfully tested'}
+    return [msg, result_list, output_list]
 
 ''' run_test에 통합함.
 def run_specific_test(user_code, input, output, file_name):
