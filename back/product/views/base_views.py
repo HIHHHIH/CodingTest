@@ -21,9 +21,9 @@ def get_recent(request, user_id):
         testcases = testcase.objects.filter(problem_id=0)
         current_code = code.objects.filter(user_id=user_id).filter(problem_id=0)
     except Exception as e:
-        problems = problem.objects.filter(problem_id=problem_id)
-        testcases = testcase.objects.filter(problem_id=problem_id)
-        current_code = code.objects.filter(user_id=user_id).filter(problem_id=problem_id)
+        problems = problem.objects.filter(problem_id=0)
+        testcases = testcase.objects.filter(problem_id=0)
+        current_code = code.objects.filter(user_id=user_id).filter(problem_id=0)
 
     problem_serializer = ProblemSerializer(problems, many=True)
     test_serializer = TestCaseSerializer(testcases, many=True)
@@ -74,7 +74,7 @@ def get_main_page(request, problem_id, user_id):
     problem_serializer = ProblemSerializer(current_problem, many=True)
 
     request.session["problem_id"] = problem_id  #세션에 지금 접속한 user_id의 problem_id 저장
-
+    del request.session["problem_id"]
     testcases = testcase.objects.filter(problem_id=problem_id, isHidden=False)
     test_serializer = TestCaseSerializer(testcases, many=True)
 
