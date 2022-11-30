@@ -1,7 +1,18 @@
 import os
 import json
 
-
+""" 효율성 검사: multimetric    
+    
+    Args:
+        user_code (string): user code for inspecting efficiency
+    
+    Returns:
+        halstead: number of delivered bugs according to Halstead  
+        loc_score: lines of code
+        control_complexity: cyclomatic complexity according to McCabe
+        data_complexity: number of unique operands
+        
+"""
 def multimetric_run(user_code):
     # user_code: string -> file(.py)
     temp_file = open('./user_code.py', 'w')
@@ -15,7 +26,7 @@ def multimetric_run(user_code):
         data = json.load(result)
 
     # parse the result
-    halstead = data['overall']['halstead_timerequired']
+    halstead = data['overall']['halstead_bugprop']
     loc = data['overall']['loc']
     control_complexity = data['overall']['cyclomatic_complexity']
     data_complexity = data['overall']['operands_uniq']

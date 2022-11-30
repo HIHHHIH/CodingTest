@@ -111,23 +111,30 @@ def submit_code(request):  # 코드 제출
         for line in user_code.splitlines():
             f.write(line+'\n')
         f.close()
-    # 효율성 검사 : multimetric
+
+    """ 효율성 검사: multimetric    
+    
+    유저가 작성한 코드와, 데이터베이스에 저장되어 있는 솔루션 코드를 각각 multimetric_runner 통해 효율성 검사
+    multimetric 수행 결과 반환된 유저 코드의 각 지표를 솔루션 코드를 기준으로 상대값을 설정하여 스코어로 반환한다.
+    각 지표별 최대 스코어는 25점이다.
+    
+    """
     user_halstead, user_loc, user_control_complexity, user_data_complexity = multimetric_run(user_code)
     sol_halstead, sol_loc, sol_control_complexity, sol_data_complexity = multimetric_run(solution_code)
 
     halstead_score = 25 if user_halstead < sol_halstead else (sol_halstead / user_halstead) * 25
-    loc_score = 25 if user_loc < sol_loc else (sol_loc / user_loc) * 25
+    loc_score = 25 if user_loc < sol_loc else (float(sol_loc) / float(user_loc)) * 25
     control_complexity_score \
         = 25 if user_control_complexity < sol_control_complexity \
         else (sol_control_complexity / user_control_complexity) * 25
     data_complexity_score \
         = 25 if user_data_complexity < sol_data_complexity \
-        else (sol_data_complexity / user_data_complexity) * 25
+        else (float(sol_data_complexity) / float(user_data_complexity)) * 25
 
-    multimetric_output = {"loc_score": loc_score,
-                          "data_complexity_score": data_complexity_score,
-                          "control_complexity_score": control_complexity_score,
-                          "halstead_score": halstead_score}
+    multimetric_output = {"loc_score": round(loc_score, 1),
+                          "data_complexity_score": round(data_complexity_score, 1),
+                          "control_complexity_score": round(control_complexity_score, 1),
+                          "halstead_score": round(halstead_score, 1)}
 
     # 가독성 검사 : pylama
     pylama_output = pylama_run(file_name)
