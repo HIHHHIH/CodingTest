@@ -170,7 +170,7 @@ def run_specific_testcase(request):
         # user_code = "def solution(a,b,c):\n\treturn a+b+c"  #실행예시
         # input = [[1,2,3]]  # 모든 테스트 케이스 인풋 리스트
         # output = [6]  # 모든 테스트 케이스 아웃풋 리스트
-        testcase_result, user_output = run_test('single', user_code, input_list, output_list, rand_name())
+        msg, testcase_result, user_output = run_test('single', user_code, input_list, output_list, rand_name())
 
         return Response({'result' : testcase_result[0], 'output' : user_output[0]})
     except Exception as e:
