@@ -15,12 +15,12 @@ def helloAPI(request):
 @api_view(['GET'])
 def get_recent(request, user_id):
 
-    problem_id = request.session["problem_id"]  #세션에서 문제 가져오기
-    if problem_id is None:
+    try:
+        problem_id = request.session["problem_id"]  #세션에서 문제 가져오기
         problems = problem.objects.filter(problem_id=0)
         testcases = testcase.objects.filter(problem_id=0)
         current_code = code.objects.filter(user_id=user_id).filter(problem_id=0)
-    else:
+    except Exception as e:
         problems = problem.objects.filter(problem_id=problem_id)
         testcases = testcase.objects.filter(problem_id=problem_id)
         current_code = code.objects.filter(user_id=user_id).filter(problem_id=problem_id)
