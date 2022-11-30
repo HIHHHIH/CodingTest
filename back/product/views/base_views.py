@@ -16,7 +16,6 @@ def helloAPI(request):
 def get_recent(request, user_id):
 
     problem_id = request.session["problem_id"]  #세션에서 문제 가져오기
-    print("problem id: " + str(problem_id))
     if problem_id is None:
         problems = problem.objects.filter(problem_id=0)
         testcases = testcase.objects.filter(problem_id=0)
