@@ -24,4 +24,5 @@ urlpatterns = [
     path('grade/', console_views.grade_code),
     path('submit/',console_views.submit_code),
 
+    path('delete/', base_views.delete_session),
 ]

@@ -8,28 +8,33 @@ from ..module.case_tester import run_test, rand_name
 
 
 @api_view(['GET'])
+def delete_session(request):
+    del request.session["problem_id"]
+    return Response({"result": "session deleted"})
+
+
+@api_view(['GET'])
 def helloAPI(request):
     return HttpResponse("hello world!")
 
 
 @api_view(['GET'])
 def get_recent(request, user_id):
-
     try:
         problem_id = request.session["problem_id"]  #세션에서 문제 가져오기
-        problems = problem.objects.filter(problem_id=problem_id)
-        testcases = testcase.objects.filter(problem_id=problem_id)
-        current_code = code.objects.filter(user_id=user_id).filter(problem_id=problem_id)
     except Exception as e:
-        problems = problem.objects.filter(problem_id=0)
-        testcases = testcase.objects.filter(problem_id=0)
-        current_code = code.objects.filter(user_id=user_id).filter(problem_id=0)
+        problem_id = 0
+
+    problems = problem.objects.filter(problem_id=problem_id)
+    testcases = testcase.objects.filter(problem_id=problem_id)
+    current_code = code.objects.filter(user_id=user_id).filter(problem_id=problem_id)
 
     problem_serializer = ProblemSerializer(problems, many=True)
     test_serializer = TestCaseSerializer(testcases, many=True)
     code_serializer = CodeSerializer(current_code, many=True)
 
     return Response([problem_serializer.data, test_serializer.data, code_serializer.data])
+
 
 @api_view(['POST'])
 def get_lectures(request):
