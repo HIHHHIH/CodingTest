@@ -74,7 +74,6 @@ def get_main_page(request, problem_id, user_id):
     problem_serializer = ProblemSerializer(current_problem, many=True)
 
     request.session["problem_id"] = problem_id  #세션에 지금 접속한 user_id의 problem_id 저장
-    del request.session["problem_id"]
     testcases = testcase.objects.filter(problem_id=problem_id, isHidden=False)
     test_serializer = TestCaseSerializer(testcases, many=True)
 
