@@ -15,8 +15,8 @@ def helloAPI(request):
 @api_view(['GET'])
 def get_recent(request, user_id):
 
-    problem_id = request.session.get(user_id)  #세션에서 문제 가져오기
-
+    problem_id = request.session["problem_id"]  #세션에서 문제 가져오기
+    print("problem id: " + str(problem_id))
     if problem_id is None:
         problems = problem.objects.filter(problem_id=0)
         testcases = testcase.objects.filter(problem_id=0)
@@ -74,7 +74,7 @@ def get_main_page(request, problem_id, user_id):
     current_problem = problem.objects.filter(problem_id= problem_id )
     problem_serializer = ProblemSerializer(current_problem, many=True)
 
-    request.session[user_id] = problem_id  #세션에 지금 접속한 user_id의 problem_id 저장
+    request.session["problem_id"] = problem_id  #세션에 지금 접속한 user_id의 problem_id 저장
 
     testcases = testcase.objects.filter(problem_id=problem_id, isHidden=False)
     test_serializer = TestCaseSerializer(testcases, many=True)
