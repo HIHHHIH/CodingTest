@@ -9,8 +9,6 @@ from ..module.multimetric_runner import *
 from ..module.code_explainer import *
 from ..module.copydetect_runner import *
 
-import re
-
 
 def grade(user_code, testcases):
 
@@ -180,7 +178,7 @@ def submit_code(request):  # 코드 제출
     if serializer.is_valid():
         serializer.save()
     else:
-        print(serializer.errors)
+        return Response({'result': 'failed to save code', 'detail': serializer.errors})
     # 정상 메세지
     result = {'msg': 'ok', 'detail': 'your code is successfully submitted'}
 

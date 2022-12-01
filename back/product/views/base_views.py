@@ -116,28 +116,6 @@ def info_problem(request):
         print(e)
         return JsonResponse({"result":"the json is not correctly serialized"})
 
-
-@api_view(['POST'])
-def load_code(request):
-    try:
-        problem_id = request.data["problem_id"]
-        student_id = request.data["student_id"]
-
-        item = (code.objects
-                    .filter( user= student_id, problem= problem_id).order_by('-modified_date')
-                    )
-        serializer = CodeSerializer(item , many=True)
-
-        if(serializer.data):
-            return Response(serializer.data[0])
-        else:
-            return Response(serializer.data)
-
-    except Exception as e:
-        print(e)
-        return JsonResponse({"result":"the json is not correctly serialized"})
-
-
 """
 1. run_specific_testcase
 url: 127.0.0.1:8000/study/testcase/
