@@ -146,7 +146,7 @@ def run_specific_testcase(request):
         if(len(output.split(" ")) != 1) :
             output_list.append(list(map(int, output.split(" "))))
         else :
-            output_list.append([int(output)])
+            output_list.append(int(output))
 
         # user_code = "def solution(a,b,c):\n\treturn a+b+c"  #실행예시
         # input = [[1,2,3]]  # 모든 테스트 케이스 인풋 리스트
