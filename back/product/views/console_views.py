@@ -23,22 +23,27 @@ def grade(user_code, testcases):
     outputs = list(testcases.values_list('output', flat=True))
     output_list = list(map(int, outputs))
 
-    msg, testcase_result, user_output = run_test('whole',user_code, input_list, output_list, rand_name())
-    test_success = True
-
+    try:
+        msg, testcase_result, user_output = run_test('whole',user_code, input_list, output_list, rand_name())
+        test_success = True
+    except Exception as e:
+        test_success = False
 
     # 채점 점수
-    score = sum(20 for value in testcase_result.values() if value == 'P')
+    score = sum(20 for value in testcase_result.values() if value == 'P') if test_success else 0
 
     # 오픈 테스트 케이스
     open_case_sum = []
     for i in range(2):
-        if testcase_result[i] == 'P':
-            result = '통과'
-        elif testcase_result[i] == 'E':
-            result = '에러'
+        if test_success:
+            if testcase_result[i] == 'P':
+                result = '통과'
+            elif testcase_result[i] == 'E':
+                result = '에러'
+            else:
+                result = '실패'
         else:
-            result = '실패'
+            result = '에러'
 
         case_result = {'result': result,
                        'input': str(input_string_list[i]),
@@ -49,14 +54,26 @@ def grade(user_code, testcases):
     # 히든 테스트 케이스
     hidden_case_sum = []
     for i in range(2, 5):
-        case_result = {'result': '통과' if testcase_result[i] == 'P' else '실패'}
+        if test_success:
+            if testcase_result[i] == 'P':
+                result = '통과'
+            elif testcase_result[i] == 'E':
+                result = '에러'
+            else:
+                result = '실패'
+        else:
+            result = '에러'
+        case_result = {'result': result}
         hidden_case_sum.append(case_result)
 
     # 모든 테스트 케이스에서 에러가 발생한 경우 따로 처리
-    if all(result == 'E' for result in testcase_result.values()):
-        msg = 'all_error'
+    if test_success:
+        if all(result == 'E' for result in testcase_result.values()):
+            msg = 'all_error'
+        else:
+            msg = 'ok'
     else:
-        msg = 'ok'
+        msg = 'all_error'
     return msg, score, open_case_sum, hidden_case_sum
 
 
