@@ -90,8 +90,8 @@ class CopyDetect():
           "reference_directories" : [self.reference_dir],
           "boilerplate_directories" : [self.boilerplate_dir],
           "extensions" : ["py"], ## 확장자 명
-          "noise_threshold" : 10, ## 
-          "guarantee_threshold" : 10, ##
+          "noise_threshold" : 5, ## 
+          "guarantee_threshold" : 5, ##
           "display_threshold" : 0,
           "disable_autoopen" : True,
         }
