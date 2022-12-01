@@ -49,7 +49,10 @@ class CaseTester(unittest.TestCase):
 
     def test_case1(self):  #test_로 시작하는 method는 unittest.main()실행하면 알아서 테스트함.
         global output_list
-        user_output = self.solution(*self.params[self.test_num])
+        if(type(self.params[self.test_num]) == int):
+            user_output = self.solution(self.params[self.test_num])
+        else:
+            user_output = self.solution(*self.params[self.test_num])
         output_list[self.test_num] = user_output
         self.assertEqual(user_output, self.outputs[self.test_num])
 
