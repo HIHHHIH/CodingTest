@@ -94,10 +94,8 @@ def get_main_page(request, problem_id, user_id):
 
     current_code = code.objects.filter(user_id=user_id).filter(problem_id=problem_id)
     code_serializer = CodeSerializer(current_code, many=True)
-    code_exists = True if code_serializer.data != [] else False
-    code_response = {'code_exists': str(code_exists), 'codes': code_serializer.data}
 
-    return Response([problem_serializer.data, test_serializer.data, code_response])
+    return Response([problem_serializer.data, test_serializer.data, code_serializer.data])
 
 
 @csrf_exempt
