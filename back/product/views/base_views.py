@@ -6,6 +6,7 @@ from rest_framework.decorators import api_view
 from ..serializers.base_serializers import *
 from ..module.case_tester import run_test, rand_name
 
+recent = {}
 
 @api_view(['GET'])
 def delete_session(request):
@@ -20,13 +21,10 @@ def helloAPI(request):
 
 @api_view(['GET'])
 def get_recent(request, user_id):
-    try:
-        problem_id = request.session["problem_id"]  #세션에서 문제 가져오기
-    except Exception as e:
-        problem_id = 0
-
+    global recent
+    problem_id = recent[str(user_id)]  #세션에서 문제 가져오기
     problems = problem.objects.filter(problem_id=problem_id)
-    testcases = testcase.objects.filter(problem_id=problem_id)
+    testcases = testcase.objects.filter(problem_id=problem_id, isHidden=False)
     current_code = code.objects.filter(user_id=user_id).filter(problem_id=problem_id)
 
     problem_serializer = ProblemSerializer(problems, many=True)
@@ -78,7 +76,8 @@ def get_main_page(request, problem_id, user_id):
     current_problem = problem.objects.filter(problem_id= problem_id )
     problem_serializer = ProblemSerializer(current_problem, many=True)
 
-    request.session["problem_id"] = problem_id  #세션에 지금 접속한 user_id의 problem_id 저장
+    global recent
+    recent[user_id] = problem_id  #세션에 지금 접속한 user_id의 problem_id 저장
     testcases = testcase.objects.filter(problem_id=problem_id, isHidden=False)
     test_serializer = TestCaseSerializer(testcases, many=True)
 
