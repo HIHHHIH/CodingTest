@@ -70,15 +70,15 @@ def submit_code(request):  # 코드 제출
 
     '''
            {
-               "problem_id": 0,
-               "user_id": 0,
+               "problem": 0,
+               "user": 0,
                "user_code": "def solution(a,b):\n\td=a*b\n\treturn d",
                "code_idx": "2"
            }
    '''
 
-    user_id = request.data['user_id']
-    problem_id = request.data['problem_id']
+    user_id = request.data['user']
+    problem_id = request.data['problem']
     user_code = request.data['user_code']  # 유저가 작성한 코드
     solution_code = solution.objects.get(problem_id=problem_id).answer_code  # 정답 코드
 
@@ -179,7 +179,8 @@ def submit_code(request):  # 코드 제출
     serializer = CodeSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
-
+    else:
+        print(serializer.errors)
     # 정상 메세지
     result = {'msg': 'ok', 'detail': 'your code is successfully submitted'}
 
