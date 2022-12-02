@@ -22,7 +22,10 @@ def helloAPI(request):
 @api_view(['GET'])
 def get_recent(request, user_id):
     global recent
-    problem_id = recent[str(user_id)]  #세션에서 문제 가져오기
+    try:
+        problem_id = recent[str(user_id)]  #세션에서 문제 가져오기
+    except Exception as e:
+        problem_id = 0
     problems = problem.objects.filter(problem_id=problem_id)
     testcases = testcase.objects.filter(problem_id=problem_id, isHidden=False)
     current_code = code.objects.filter(user_id=user_id).filter(problem_id=problem_id)
