@@ -1,0 +1,134 @@
+.right1 {
+  width: 408px;
+  height: 1000px;
+  position: absolute;
+  left: 992px;
+
+  .right1Header {
+    height: 50px;
+    margin-bottom: 50px;
+    padding-left: 15px;
+    display: flex;
+    align-items: center;
+    background-color: #34465a;
+    color: #ffffff;
+    font-weight: 700;
+  }
+
+  .right1Content {
+    height: calc(100% - 100px);
+    padding: 10px;
+    background-color: #1e1e1e;
+    color: #ffffff;
+  }
+}
+
+.right2 {
+  width: 408px;
+  height: 1000px;
+  position: absolute;
+  left: 992px;
+
+  .right2Header {
+    height: 50px;
+    margin-bottom: 50px;
+    padding-left: 15px;
+    display: flex;
+    align-items: center;
+    background-color: #34465a;
+    color: #ffffff;
+    font-weight: 700;
+  }
+
+  .right2Content {
+    height: calc(100% - 100px);
+    padding: 10px;
+    background-color: #1e1e1e;
+    color: #ffffff;
+  }
+}
+
+.right3 {
+  width: 408px;
+  height: 1000px;
+  position: absolute;
+  left: 992px;
+
+  .right3Header {
+    height: 50px;
+    margin-bottom: 50px;
+    padding-left: 15px;
+    display: flex;
+    align-items: center;
+    background-color: #34465a;
+    color: #ffffff;
+    font-weight: 700;
+  }
+
+  .right3Content {
+    height: calc(100% - 100px);
+    padding: 10px;
+    background-color: #34465a;
+    color: #ffffff;
+
+    .submitResult1 {
+      height: 100%;
+      position: relative;
+
+      .submitResult1Header {
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #34465a;
+        color: #ffffff;
+        font-weight: 700;
+      }
+
+      .submitResult1Graph {
+        margin-bottom: 50px;
+      }
+
+      .submitResult1Tap {
+        margin-bottom: 50px;
+        display: flex;
+        justify-content: center;
+      }
+
+      .submitResult1Content {
+        height: calc(100% - 438px);
+        .submitContent1 {
+          height: 100%;
+          overflow: auto;
+        }
+
+        .submitContent2 {
+        }
+
+        .submitContent3 {
+          height: 100%;
+          overflow: auto;
+        }
+      }
+    }
+
+    .submitResult2 {
+      height: 100%;
+      position: relative;
+
+      .submitResult2Header {
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #34465a;
+        color: #ffffff;
+        font-weight: 700;
+      }
+
+      .submitResult2Content {
+        height: calc(100% - 438px);
+      }
+    }
+  }
+}
