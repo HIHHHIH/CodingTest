@@ -1,0 +1,116 @@
+.right1 {
+  width: 408px;
+  height: 1000px;
+  position: absolute;
+  left: 992px;
+}
+.right1 .right1Header {
+  height: 50px;
+  margin-bottom: 50px;
+  padding-left: 15px;
+  display: flex;
+  align-items: center;
+  background-color: #34465a;
+  color: #ffffff;
+  font-weight: 700;
+}
+.right1 .right1Content {
+  height: calc(100% - 100px);
+  padding: 10px;
+  background-color: #1e1e1e;
+  color: #ffffff;
+}
+
+.right2 {
+  width: 408px;
+  height: 1000px;
+  position: absolute;
+  left: 992px;
+}
+.right2 .right2Header {
+  height: 50px;
+  margin-bottom: 50px;
+  padding-left: 15px;
+  display: flex;
+  align-items: center;
+  background-color: #34465a;
+  color: #ffffff;
+  font-weight: 700;
+}
+.right2 .right2Content {
+  height: calc(100% - 100px);
+  padding: 10px;
+  background-color: #1e1e1e;
+  color: #ffffff;
+}
+
+.right3 {
+  width: 408px;
+  height: 1000px;
+  position: absolute;
+  left: 992px;
+}
+.right3 .right3Header {
+  height: 50px;
+  margin-bottom: 50px;
+  padding-left: 15px;
+  display: flex;
+  align-items: center;
+  background-color: #34465a;
+  color: #ffffff;
+  font-weight: 700;
+}
+.right3 .right3Content {
+  height: calc(100% - 100px);
+  padding: 10px;
+  background-color: #34465a;
+  color: #ffffff;
+}
+.right3 .right3Content .submitResult1 {
+  height: 100%;
+  position: relative;
+}
+.right3 .right3Content .submitResult1 .submitResult1Header {
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #34465a;
+  color: #ffffff;
+  font-weight: 700;
+}
+.right3 .right3Content .submitResult1 .submitResult1Graph {
+  margin-bottom: 50px;
+}
+.right3 .right3Content .submitResult1 .submitResult1Tap {
+  margin-bottom: 50px;
+  display: flex;
+  justify-content: center;
+}
+.right3 .right3Content .submitResult1 .submitResult1Content {
+  height: calc(100% - 438px);
+}
+.right3 .right3Content .submitResult1 .submitResult1Content .submitContent1 {
+  height: 100%;
+  overflow: auto;
+}
+.right3 .right3Content .submitResult1 .submitResult1Content .submitContent3 {
+  height: 100%;
+  overflow: auto;
+}
+.right3 .right3Content .submitResult2 {
+  height: 100%;
+  position: relative;
+}
+.right3 .right3Content .submitResult2 .submitResult2Header {
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #34465a;
+  color: #ffffff;
+  font-weight: 700;
+}
+.right3 .right3Content .submitResult2 .submitResult2Content {
+  height: calc(100% - 438px);
+}

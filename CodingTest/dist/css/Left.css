@@ -1,0 +1,81 @@
+.left {
+  width: 30%;
+  margin-right: 5%;
+}
+.left .problem {
+  height: calc(50% - 25px);
+  margin-bottom: 50px;
+  background-color: #34465a;
+}
+.left .problem .problemHeader {
+  height: 50px;
+  padding: 0 15px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  color: #ffffff;
+  font-weight: 700;
+}
+.left .problem .problemContent {
+  height: calc(50% - 30px);
+}
+.left .problem .problemContent .problemContentText {
+  width: 100%;
+  height: 100%;
+  padding: 0 15px;
+  color: #ffffff;
+  font-weight: 500;
+  line-height: 40px;
+  overflow: auto;
+}
+.left .problem .problemConstraint {
+  height: calc(50% - 30px);
+}
+.left .problem .problemConstraint .problemConstraintHeader {
+  margin-bottom: 10px;
+  padding-left: 10px;
+  color: #ffffff;
+  font-weight: 700;
+}
+.left .problem .problemConstraint .problemConstraintText {
+  padding: 0 10px;
+  color: #ffffff;
+  font-weight: 500;
+  line-height: 40px;
+}
+.left .testcase {
+  height: calc(50% - 25px);
+  background-color: #34465a;
+}
+.left .testcase .testcaseHeader {
+  margin-bottom: 10px;
+  padding: 10px 0 0 10px;
+  color: #ffffff;
+  font-weight: 500;
+}
+.left .testcase .testcase1 {
+  height: calc(50% - 22px);
+  color: #ffffff;
+}
+.left .testcase .testcase1 .testcase1Header {
+  height: 25px;
+  margin-bottom: 10px;
+  padding-left: 10px;
+  font-weight: 700;
+}
+.left .testcase .testcase1 .testcase1Content {
+  padding-left: 10px;
+}
+.left .testcase .testcase2 {
+  height: calc(50% - 22px);
+  color: #ffffff;
+}
+.left .testcase .testcase2 .testcase2Header {
+  height: 25px;
+  margin-bottom: 10px;
+  padding-left: 10px;
+  font-weight: 700;
+}
+.left .testcase .testcase2 .testcase2Content {
+  padding-left: 10px;
+}
