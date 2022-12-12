@@ -587,7 +587,22 @@ const Right = (props) => {
     return (
       <div className="right1">
         <div className="right1Header">Execution Result</div>
-        <div className="right1Content">{props.excuteMessage}</div>
+        <div className="right1Content">
+          {props.excuteResult && props.excuteMessage && (
+            <>{props.excuteMessage}</>
+          )}
+          {!props.excuteResult && props.excuteMessage && (
+            <>
+              Result: {String(props.excuteResult)}
+              <br />
+              <br />
+              Error Line: {props.excuteErrorLine}
+              <br />
+              <br />
+              Error Message: {props.excuteMessage}
+            </>
+          )}
+        </div>
       </div>
     );
   }

@@ -89,7 +89,7 @@ const Left = (props) => {
     <div className="left">
       <div className="problem">
         <div className="problemHeader">
-          problem :
+          Problem :
           <FormControl sx={{ m: 1, width: "75%" }} size="small">
             <InputLabel
               id="demo-select-small"

@@ -17,10 +17,6 @@ const Header = (props) => {
     props.setSelectedAssignmentIndex(event.target.value);
   };
 
-  const handleChangeTheme = (event) => {
-    console.log("테마변경");
-  };
-
   // 처음에 과제 목록과 선택된 과제 인덱스를 받아와서 데드라인 설정
   useEffect(() => {
     if (

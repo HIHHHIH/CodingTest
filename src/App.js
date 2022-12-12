@@ -158,6 +158,7 @@ function App() {
       setRightSection(1);
       setSelectedProblemID(problem[selectedProblemIndex].problem_id);
       setSelectedCode(0);
+      setExecuteMessage("");
       getProblemDetail(0, selectedProblemID)
         .then((res) => {
           setSkeletonCode(res.data[0][0].skeleton);
@@ -275,6 +276,8 @@ function App() {
           <Right
             rightSection={rightSection}
             excuteMessage={excuteMessage}
+            excuteErrorLine={excuteErrorLine}
+            excuteResult={excuteResult}
             gradeResult={gradeResult}
             submitResult={submitResult}
             submittedWait={submittedWait}
